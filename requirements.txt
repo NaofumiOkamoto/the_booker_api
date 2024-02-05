@@ -1,0 +1,8 @@
+scrapy
+scrapy-splash
+selenium
+python-dotenv
+psycopg2
+ipython
+pyOpenSSL
+PyMySQL
