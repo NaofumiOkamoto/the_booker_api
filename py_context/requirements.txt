@@ -1,0 +1,7 @@
+requests
+selenium
+BeautifulSoup4
+pandas
+scrapy
+scrapy-splash
+flask
