@@ -14,8 +14,10 @@ driver.implicitly_wait(10)
 # yahooログイン
 ########
 url = 'https://login.yahoo.co.jp/config/login?auth_lv=pw&.lg=jp&.intl=jp&.src=auc&.done=https%3A%2F%2Fauctions.yahoo.co.jp%2Fuser%2Fjp%2Fshow%2Fmystatus&sr_required=birthday%20gender%20postcode%20deliver'
+print('-------driver get start-------')
 driver.get(url)
 time.sleep(1)
+print('-------driver get end-------')
 login_bar = driver.find_element(By.ID, "login_handle")
 # login_bar.send_keys('jackin5beat0803')
 login_bar.send_keys('naofumi-okamoto-0803')

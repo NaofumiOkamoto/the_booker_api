@@ -5,3 +5,10 @@ pandas
 scrapy
 scrapy-splash
 flask
+Flask-RESTful
+Flask-SQLAlchemy
+flask-marshmallow
+flask-migrate
+marshmallow
+marshmallow-sqlalchemy
+python-dotenv

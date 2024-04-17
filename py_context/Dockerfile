@@ -9,12 +9,14 @@ RUN apt-get update && \
     git \
     sudo \
     wget \
-    vim
+    vim \
+    python3-pymysql
 # pipの更新
 RUN pip install --upgrade pip
 # python libraryのリストをホストから取得
 COPY ./requirements.txt /requirements.txt
 # requirements.txt内のライブラリーを一括インストール
 RUN pip install -r /requirements.txt
-WORKDIR /work
+RUN pip3 install PyMySQL
+WORKDIR /app
 CMD ["/bin/bash"] 
