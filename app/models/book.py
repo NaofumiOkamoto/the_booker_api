@@ -1,3 +1,4 @@
+import json
 from flask import jsonify, abort, request
 from flask_restful import Resource
 from datetime import datetime
@@ -11,6 +12,7 @@ class Book(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   user_id = db.Column(db.String(255), nullable=False)
   auction_id = db.Column(db.String(255), nullable=False)
+  product_name = db.Column(db.String(255), nullable=False)
   bid_amount = db.Column(db.Integer)
   bitFirstAmount = db.Column(db.Integer)
   maxAmount = db.Column(db.Integer)
@@ -24,26 +26,40 @@ class Book(db.Model):
 
 # book_schema = BookSchema(many=True)
 
-# class Bookapi(Resource):
-#   def get(self):
-#     # １件取得
-#     id = request.args.get('id')
-#     result = Book.query.filter_by(id=id).all()
-#     if len(result) != 0: 
-#         return jsonify({"users" : book_schema.dump(result)})
-#     else:
-#         abort(404)
+class Bookapi(Resource):
+  def get(self):
+    # １件取得
+    user_id = request.args.get('user_id')
+    print(user_id)
+    result = Book.query.filter_by(user_id=user_id).all()
 
-#   def post(self):
-#     # 作成
-#     print(request.json)
-#     users = request.json["users"]
-#     for i in users:
-#         u  = User(name=i["name"])
-#         db.session.add(u)
-#     db.session.commit()
+    print('---------', result)
+    books = []
+    for record in result:
+    #   print(json.dump(book))
+      books.append({
+        'id': record.id,
+        'auction_id': record.auction_id,
+      })
+    
+    return jsonify({'books': books})
 
-#     return '', 204
+    # # return jsonify({"book" : book_schema.dump(result)})
+    # return result
+
+        # abort(404)
+
+  def post(self):
+    # 作成
+    print('----post request.json----', request.json)
+    book = request.json["book"]
+    print('----book----', book)
+    book_object = Book(user_id=1, auction_id=book["auction_id"])
+    print('----book_object----', book_object)
+    db.session.add(book_object)
+    db.session.commit()
+
+    return '', 204
 
 #   def put(self):
 #     # 更新

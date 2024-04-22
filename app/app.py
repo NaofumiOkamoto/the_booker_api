@@ -1,6 +1,8 @@
 from flask import Flask,request,jsonify
 from database import init_db
-import models
+from flask_restful import Api
+from flask_marshmallow import Marshmallow
+from models.book import Bookapi
 
 # 
 from selenium import webdriver
@@ -9,13 +11,15 @@ from selenium.webdriver.common.by import By
 
 app = Flask(__name__)
 app.config.from_object('config.Config')
+ma = Marshmallow(app)
+api = Api(app)
 init_db(app)
 
 @app.route("/api/check_prod", methods=["GET"])
 def index():
     options = webdriver.ChromeOptions()
     driver = webdriver.Remote(
-                command_executor = 'http://selenium:4444/wd/hub',
+                command_executor = 'http://the_booker_api-selenium-1:4444/wd/hub',
                 options = options
                 )
 
@@ -35,6 +39,7 @@ def index():
     finally:
       driver.quit()
 
+api.add_resource(Bookapi, '/book')
 
 ##server run
 if __name__ == "__main__":

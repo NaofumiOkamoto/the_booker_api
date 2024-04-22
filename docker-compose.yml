@@ -8,6 +8,8 @@ services:
     ports:
       - 4444:4444         # selenium sever port
       - 7900:7900         # 実行中のChromeを確認するVNC用port
+    networks:
+      - app-net
   
   python:                 # python container
     build: ./py_context   # python3のbuild contextを指定
