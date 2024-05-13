@@ -29,13 +29,15 @@ def index():
     print('-------driver get start-------')
     try:
         driver.get(url)
-        productTitle = driver.find_element(By.XPATH, "//*[@id='ProductTitle']/div/h1")
-        print('productTitle: ', productTitle.text)
-        title = productTitle.text
-        return jsonify({'title': title})
+        product_title = driver.find_element(By.XPATH, "//*[@id='ProductTitle']/div/h1").text
+        current_price = driver.find_element(By.XPATH, "//*[@id='l-sub']/div[2]/ul/li[1]/div[1]/div[2]/dl/div[1]/dd").text
+        close_time = driver.find_element(By.XPATH, "//*[@id='l-sub']/div[2]/ul/li[3]/section/div/div/table/tbody/tr[13]/td").text
+        print('product_title: ', product_title)
+        print('current_price: ', current_price)
+        return jsonify({'success': True, 'title': product_title, 'current_price': current_price, 'close_time': close_time})
     except Exception as e:
-        print('エラー！！！！！！！！: ', e)
-        return jsonify({'title': '商品が存在しません'})
+        print('商品情報取得でエラー！！！！！！！！: ', e)
+        return jsonify({'success': False, 'title': '商品が存在しません.....'})
     finally:
       driver.quit()
 

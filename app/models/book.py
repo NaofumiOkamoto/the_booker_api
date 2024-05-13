@@ -9,15 +9,17 @@ class Book(db.Model):
 
   __tablename__ = 'books'
 
-  id = db.Column(db.Integer, primary_key=True)
-  user_id = db.Column(db.String(255), nullable=False)
-  auction_id = db.Column(db.String(255), nullable=False)
-  product_name = db.Column(db.String(255), nullable=False)
-  bid_amount = db.Column(db.Integer)
-  bitFirstAmount = db.Column(db.Integer)
-  maxAmount = db.Column(db.Integer)
-  created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
-  updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
+  id = db.mapped_column(db.Integer, primary_key=True)
+  user_id = db.mapped_column(db.String(255), nullable=False)
+  auction_id = db.mapped_column(db.String(255), nullable=False)
+  product_name = db.mapped_column(db.String(255), nullable=False)
+  bid_amount = db.mapped_column(db.Integer)
+  bid_first_amount = db.mapped_column(db.Integer)
+  max_amount = db.mapped_column(db.Integer)
+  seconds = db.mapped_column(db.Integer)
+  close_time = db.mapped_column(db.DateTime)
+  created_at = db.mapped_column(db.DateTime, nullable=False, default=datetime.now)
+  updated_at = db.mapped_column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
 
 # class BookSchema(ma.Schema):
 #   class Meta:
@@ -36,30 +38,40 @@ class Bookapi(Resource):
     print('---------', result)
     books = []
     for record in result:
-    #   print(json.dump(book))
       books.append({
         'id': record.id,
         'auction_id': record.auction_id,
+        'product_name': record.product_name
       })
     
     return jsonify({'books': books})
 
-    # # return jsonify({"book" : book_schema.dump(result)})
-    # return result
-
-        # abort(404)
+    # abort(404)
 
   def post(self):
     # 作成
-    print('----post request.json----', request.json)
-    book = request.json["book"]
-    print('----book----', book)
-    book_object = Book(user_id=1, auction_id=book["auction_id"])
-    print('----book_object----', book_object)
-    db.session.add(book_object)
-    db.session.commit()
+    try:
 
-    return '', 204
+      print('----post request.json----', request.json)
+      book = request.json["book"]
+      print('----book----', book)
+      book_object = Book(
+        user_id=1,
+        auction_id=book["auction_id"],
+        product_name=book["product_name"],
+        bid_amount=book["bid_amount"],
+        bid_first_amount=book["bid_first_amount"],
+        max_amount=book["max_amount"],
+        close_time=book["close_time"],
+        seconds=book["seconds"],
+      )
+      print('----book_object----', book_object)
+      db.session.add(book_object)
+      db.session.commit()
+      return '', 204
+    except Exception as e:
+      print('予約作成エラ〜', e)
+
 
 #   def put(self):
 #     # 更新
