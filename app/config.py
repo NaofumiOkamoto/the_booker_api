@@ -5,11 +5,11 @@ class DevConfig:
 
   # SQLAlchemy
   SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{user}:{password}@{host}/{dbname}?charset=utf8'.format(**{
-    'user': os.getenv('DB_USER', 'root'),
-    'password': os.getenv('DB_PASSWORD', 'root'),
-    'host': os.getenv('DB_HOST', 'the_booker_api-db-1'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'host': os.getenv('DB_HOST'),
     # 'port': os.getenv('DB_PORT', 33306),
-    'dbname': os.getenv('DB_NAME', 'booker')
+    'dbname': os.getenv('DB_NAME')
   })
   SQLALCHEMY_TRACK_MODIFICATIONS = False
   SQLALCHEMY_ECHO = False
