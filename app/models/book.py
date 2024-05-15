@@ -35,13 +35,17 @@ class Bookapi(Resource):
     print(user_id)
     result = Book.query.filter_by(user_id=user_id).all()
 
-    print('---------', result)
     books = []
     for record in result:
       books.append({
         'id': record.id,
         'auction_id': record.auction_id,
-        'product_name': record.product_name
+        'product_name': record.product_name,
+        'bid_amount': record.bid_amount,
+        'bid_first_amount': record.bid_first_amount,
+        'max_amount': record.max_amount,
+        'seconds': record.seconds,
+        'close_time': record.close_time
       })
     
     return jsonify({'books': books})
