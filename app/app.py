@@ -29,9 +29,28 @@ def index():
     print('-------driver get start-------')
     try:
         driver.get(url)
+
         product_title = driver.find_element(By.XPATH, "//*[@id='ProductTitle']/div/h1").text
         current_price = driver.find_element(By.XPATH, "//*[@id='l-sub']/div[2]/ul/li[1]/div[1]/div[2]/dl/div[1]/dd").text
-        close_time = driver.find_element(By.XPATH, "//*[@id='l-sub']/div[2]/ul/li[3]/section/div/div/table/tbody/tr[13]/td").text
+
+        # 更新情報があると階層が変わるため
+        li3_text = driver.find_element(By.XPATH, "//*[@id='l-sub']/div[2]/ul/li[3]").text
+        if li3_text == '更新情報':
+            liNum = 'li[4]'
+        else:
+            liNum = 'li[3]'
+        # tr[11] ~ tr[13] に終了日時がありそうなので以下のような取り方にした
+        th11 = driver.find_element(By.XPATH, f"//*[@id='l-sub']/div[2]/ul/{liNum}/section/div/div/table/tbody/tr[11]/th").text
+        td11 = driver.find_element(By.XPATH, f"//*[@id='l-sub']/div[2]/ul/{liNum}/section/div/div/table/tbody/tr[11]/td").text
+        th12 = driver.find_element(By.XPATH, f"//*[@id='l-sub']/div[2]/ul/{liNum}/section/div/div/table/tbody/tr[12]/th").text
+        td12 = driver.find_element(By.XPATH, f"//*[@id='l-sub']/div[2]/ul/{liNum}/section/div/div/table/tbody/tr[12]/td").text
+        th13 = driver.find_element(By.XPATH, f"//*[@id='l-sub']/div[2]/ul/{liNum}/section/div/div/table/tbody/tr[13]/th").text
+        td13 = driver.find_element(By.XPATH, f"//*[@id='l-sub']/div[2]/ul/{liNum}/section/div/div/table/tbody/tr[13]/td").text
+        for tr in [[th11, td11], [th12, td12], [th13, td13]]:
+            print(tr)
+            if tr[0] == '終了日時':
+                close_time = tr[1]
+
         print('product_title: ', product_title)
         print('current_price: ', current_price)
         return jsonify({'success': True, 'title': product_title, 'current_price': current_price, 'close_time': close_time})
