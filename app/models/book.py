@@ -11,6 +11,7 @@ class Book(db.Model):
 
   id = db.mapped_column(db.Integer, primary_key=True)
   user_id = db.mapped_column(db.String(255), nullable=False)
+  platform_name = db.mapped_column(db.String(255), nullable=False)
   auction_id = db.mapped_column(db.String(255), nullable=False)
   product_name = db.mapped_column(db.String(255), nullable=False)
   bid_amount = db.mapped_column(db.Integer)
@@ -39,9 +40,9 @@ class Bookapi(Resource):
     for record in result:
       books.append({
         'id': record.id,
+        'platform_name': record.platform_name,
         'auction_id': record.auction_id,
         'product_name': record.product_name,
-        'bid_amount': record.bid_amount,
         'bid_first_amount': record.bid_first_amount,
         'max_amount': record.max_amount,
         'seconds': record.seconds,
@@ -61,9 +62,9 @@ class Bookapi(Resource):
       print('----book----', book)
       book_object = Book(
         user_id=1,
+        platform_name=book["platform_name"],
         auction_id=book["auction_id"],
         product_name=book["product_name"],
-        bid_amount=book["bid_amount"],
         bid_first_amount=book["bid_first_amount"],
         max_amount=book["max_amount"],
         close_time=book["close_time"],
