@@ -59,18 +59,22 @@ def index():
         detail_button.click()
         time.sleep(1.5)
         driver.switch_to.window(driver.window_handles[-1])
+        now = datetime.datetime.now()
         remaining_time = driver.find_element(By.ID, 'time').text
         pattern = r'\d+'
         matches = re.findall(pattern, remaining_time)
         days, hours, minutes, seconds = matches
-        now = datetime.datetime.now()
         end_time = now + datetime.timedelta(days=int(days), hours=int(hours), minutes=int(minutes), seconds=int(seconds))
+        d_week = {'Sun': '日', 'Mon': '月', 'Tue': '火', 'Wed': '水', 'Thu': '木', 'Fri': '金', 'Sat': '土'}
+        key = end_time.strftime('%a')
+        w = d_week[key]
+        d = end_time.strftime('%Y.%m.%d') + f'（{w}）'+ end_time.strftime('%H:%M:%S')
         print('残り時間: ', remaining_time)
         print('現在時刻: ', now)
         print('終了時間: ', end_time)
         print('商品名: ', product_title)
         print('現在価格: ', current_price)
-        return jsonify({'success': True, 'title': product_title, 'current_price': current_price, 'close_time': end_time})
+        return jsonify({'success': True, 'title': product_title, 'current_price': current_price, 'close_time': d})
     except Exception as e:
         print('商品情報取得でエラー！！！！！！！！: ', e)
         return jsonify({'success': False, 'title': '商品が存在しません.....'})
