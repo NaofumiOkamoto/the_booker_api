@@ -61,7 +61,7 @@ class Bookapi(Resource):
       book = request.json["book"]
       print('----book----', book)
       book_object = Book(
-        user_id=1,
+        user_id=book["user_id"],
         platform_name=book["platform_name"],
         auction_id=book["auction_id"],
         product_name=book["product_name"],
