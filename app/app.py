@@ -64,7 +64,7 @@ def index():
         pattern = r'\d+'
         matches = re.findall(pattern, remaining_time)
         days, hours, minutes, seconds = matches
-        end_time = now + datetime.timedelta(days=int(days), hours=int(hours), minutes=int(minutes), seconds=int(seconds))
+        end_time = now + datetime.timedelta(days=int(days), hours=(int(hours) + 9), minutes=int(minutes), seconds=int(seconds))
         d_week = {'Sun': '日', 'Mon': '月', 'Tue': '火', 'Wed': '水', 'Thu': '木', 'Fri': '金', 'Sat': '土'}
         key = end_time.strftime('%a')
         w = d_week[key]
