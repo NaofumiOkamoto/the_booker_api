@@ -46,7 +46,9 @@ class Bookapi(Resource):
         'bid_first_amount': record.bid_first_amount,
         'max_amount': record.max_amount,
         'seconds': record.seconds,
-        'close_time': record.close_time
+        'close_time': record.close_time,
+        'created_at': record.created_at,
+
       })
     
     return jsonify({'books': books})
