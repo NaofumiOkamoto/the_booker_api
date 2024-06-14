@@ -20,8 +20,8 @@ class Book(db.Model):
   max_amount = db.mapped_column(db.Integer)
   seconds = db.mapped_column(db.Integer)
   close_time = db.mapped_column(db.DateTime)
-  created_at = db.mapped_column(db.DateTime, nullable=False, default=datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
-  updated_at = db.mapped_column(db.DateTime, nullable=False, default=datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')), onupdate=datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
+  created_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
+  updated_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')), onupdate=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
 
 # class BookSchema(ma.Schema):
 #   class Meta:
