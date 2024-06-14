@@ -3,6 +3,7 @@ from flask import jsonify, abort, request
 from flask_restful import Resource
 from datetime import datetime
 from database import db
+import zoneinfo
 # from app import ma
 
 class Book(db.Model):
@@ -19,8 +20,8 @@ class Book(db.Model):
   max_amount = db.mapped_column(db.Integer)
   seconds = db.mapped_column(db.Integer)
   close_time = db.mapped_column(db.DateTime)
-  created_at = db.mapped_column(db.DateTime, nullable=False, default=datetime.now)
-  updated_at = db.mapped_column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
+  created_at = db.mapped_column(db.DateTime, nullable=False, default=datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
+  updated_at = db.mapped_column(db.DateTime, nullable=False, default=datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')), onupdate=datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
 
 # class BookSchema(ma.Schema):
 #   class Meta:
@@ -38,6 +39,9 @@ class Bookapi(Resource):
 
     books = []
     for record in result:
+      jst_created_dt = record.created_at.strftime('%Y/%m/%d %H:%M:%S')
+      jst_close_time = record.close_time.strftime('%Y/%m/%d %H:%M:%S')
+
       books.append({
         'id': record.id,
         'platform_name': record.platform_name,
@@ -46,8 +50,8 @@ class Bookapi(Resource):
         'bid_first_amount': record.bid_first_amount,
         'max_amount': record.max_amount,
         'seconds': record.seconds,
-        'close_time': record.close_time,
-        'created_at': record.created_at,
+        'close_time': jst_close_time,
+        'created_at': jst_created_dt,
 
       })
     
