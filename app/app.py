@@ -1,11 +1,12 @@
 import datetime
 import time
 import re
-from flask import Flask,request,jsonify
+from flask import Flask,request,jsonify,send_file
 from database import init_db
 from flask_restful import Api
 from flask_marshmallow import Marshmallow
 from models.book import Bookapi
+import base64
 
 # 
 from selenium import webdriver
@@ -78,6 +79,20 @@ def index():
         return jsonify({'success': False, 'title': '商品が存在しません.....'})
     finally:
       driver.quit()
+
+@app.route("/api/get_img", methods=["GET"])
+def get_img():
+    try:
+        id = request.args.get('auctionId')
+        filename = f'images/{id}.png'
+        print(filename)
+        return send_file(filename, mimetype='image/jpeg')
+
+    except Exception as e:
+        print('画像なし')
+        return jsonify({'status': ''}), 404
+
+
 
 def extract_time_components(remaining_time):
     # パターン1: <日>日＋<時>:<分>:<秒>
