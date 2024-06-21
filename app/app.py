@@ -1,23 +1,69 @@
 import datetime
 import time
+import pytz
 import re
+from celery_utils import make_celery
 from flask import Flask,request,jsonify,send_file
 from database import init_db
 from flask_restful import Api
 from flask_marshmallow import Marshmallow
-from models.book import Bookapi
-import base64
+from models.book import Book, Bookapi
+from test_scraping import hoge
+from database import db
 
-# 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-# import time
 
 app = Flask(__name__)
 app.config.from_object('config.Config')
+app.config['CELERY_BROKER_URL'] = 'redis://redis:6379'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://redis:6379'
+celery = make_celery(app)
 ma = Marshmallow(app)
 api = Api(app)
 init_db(app)
+
+@celery.task(name="app.run_test")
+def run_test(auction_id):
+    with app.app_context():
+        print('run_test auction_id: ', auction_id)
+        from test_scraping import hoge
+        result = hoge(auction_id)
+        return f"Task completed at {datetime.datetime.now().isoformat()} - Result: {result}"
+
+@app.route('/schedule', methods=['GET'])
+def schedule_task():
+    # book = Book.query.get(42)
+    jst = pytz.timezone('Asia/Tokyo')
+    now_jst = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+    books = Book.query.filter(Book.close_time > now_jst).all()
+    print(books)
+    return 'a'
+    return {'books': [book.to_dict() for book in books]} 
+
+    if not book:
+        return jsonify({"error": "Book not found"}), 404
+    
+    close_time = book.close_time
+    
+    # close_timeをJSTに変換
+    if close_time.tzinfo is None:
+        close_time = jst.localize(close_time)
+    else:
+        close_time = close_time.astimezone(jst)
+    
+    delay = (close_time - now_jst).total_seconds()
+    print(close_time)
+    print(now_jst)
+    print(delay)
+    if delay < 0:
+        return jsonify({"error": "close_time is in the past"}), 400
+    
+    print(f'-----start run_test.apply_async--{book.auction_id}------')
+    result = run_test.apply_async(args=[book.auction_id], countdown=delay) 
+    print('-----end run_test.apply_async--------')
+    return jsonify({"task_id": result.id}), 202
+
 
 @app.route("/api/check_prod", methods=["GET"])
 def index():
@@ -33,7 +79,6 @@ def index():
     print('-------driver get start-------')
     try:
         driver.get(url)
-
         product_title = driver.find_element(By.XPATH, "//*[@id='ProductTitle']/div/h1").text
         print('商品名: ', product_title)
         current_price = driver.find_element(By.XPATH, "//*[@id='l-sub']/div[2]/ul/li[1]/div[1]/div[2]/dl/div[1]/dd").text

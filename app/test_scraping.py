@@ -1,15 +1,19 @@
 import os
-import sys
+import pytz
+from flask import Flask, request
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from models.book import Bookapi, Book
+from database import db
+from celery_utils import make_celery
 import time
 
-def hoge():
+# Yahooにログインして入札する
+# @celery.task(name="app.hoge")
+def hoge(auction_id):
+  FILENAME = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"images/{auction_id}.png")
   try:
-    args = sys.argv
-    auction_id = args[1] if len(args) > 1 else '1117361868'
-    FILENAME = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"images/{auction_id}.png")
-
     options = webdriver.ChromeOptions()
     driver = webdriver.Remote(
                 command_executor = 'http://selenium:4444/wd/hub',
@@ -59,9 +63,28 @@ def hoge():
     driver.save_screenshot(FILENAME)
     time.sleep(2)
     driver.quit()
+
+    from app import app
+    with app.app_context():  # app_context内で実行
+      book = Book.query.filter_by(auction_id=auction_id).first()
+      now = datetime.now(pytz.timezone('Asia/Tokyo'))
+      noww = now.strftime('%Y-%m-%d %H:%M:%S')
+      book.bid_time = noww
+      if book:
+        db.session.add(book)
+        db.session.commit()
+    return 'success'
   except Exception as e:
-    print('エラー: ', e)
+    print('hogeでエラー: ', e)
+    from app import app
+    with app.app_context():  # app_context内で実行
+      book = Book.query.filter_by(auction_id=auction_id).first()
+      now = datetime.now(pytz.timezone('Asia/Tokyo'))
+      noww = now.strftime('%Y-%m-%d %H:%M:%S')
+      book.bid_time = noww
+      if book:
+        db.session.add(book)
+        db.session.commit()
+    driver.save_screenshot(FILENAME)
     driver.quit()
-
-
-hoge()
+    return 'failed'

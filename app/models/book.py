@@ -2,7 +2,7 @@ import json
 from flask import jsonify, abort, request
 from flask_restful import Resource
 from datetime import datetime
-from database import db
+from database import db, init_db
 import zoneinfo
 # from app import ma
 
@@ -19,6 +19,10 @@ class Book(db.Model):
   bid_first_amount = db.mapped_column(db.Integer)
   max_amount = db.mapped_column(db.Integer)
   seconds = db.mapped_column(db.Integer)
+  is_processed = db.mapped_column(db.Boolean)
+  bid_time = db.mapped_column(db.DateTime)
+  is_succeeded = db.mapped_column(db.Boolean)
+  error = db.mapped_column(db.String(255))
   close_time = db.mapped_column(db.DateTime)
   created_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
   updated_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')), onupdate=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
@@ -29,18 +33,28 @@ class Book(db.Model):
 #     fields = ("id", "auction_id", "created_at")
 
 # book_schema = BookSchema(many=True)
+  # def to_dict(self):
+  #     return {
+  #         'id': self.id,
+  #         'close_time': self.close_time.strftime('%Y-%m-%d %H:%M:%S') if self.close_time else None,
+  #         # 他のフィールドを辞書に追加
+  #     }
 
 class Bookapi(Resource):
   def get(self):
-    # １件取得
+    # userの取得
     user_id = request.args.get('user_id')
     print(user_id)
-    result = Book.query.filter_by(user_id=user_id).all()
+    result = Book.query.filter_by(user_id=user_id).order_by(Book.created_at.desc()).all()
 
     books = []
     for record in result:
       jst_created_dt = record.created_at.strftime('%Y/%m/%d %H:%M:%S')
       jst_close_time = record.close_time.strftime('%Y/%m/%d %H:%M:%S')
+      jst_bid_time = None
+      bid_time = record.bid_time
+      if bid_time:
+        jst_bid_time = bid_time.strftime('%Y/%m/%d %H:%M:%S')
 
       books.append({
         'id': record.id,
@@ -50,13 +64,12 @@ class Bookapi(Resource):
         'bid_first_amount': record.bid_first_amount,
         'max_amount': record.max_amount,
         'seconds': record.seconds,
+        'bid_time': jst_bid_time,
         'close_time': jst_close_time,
         'created_at': jst_created_dt,
-
       })
     
     return jsonify({'books': books})
-
     # abort(404)
 
   def post(self):
@@ -82,29 +95,3 @@ class Bookapi(Resource):
       return '', 204
     except Exception as e:
       print('予約作成エラ〜', e)
-
-
-#   def put(self):
-#     # 更新
-#     id = request.json["id"]
-#     user = Book.query.filter_by(id=id).first()
-    
-#     if user : 
-#         for key, val in request.json.items():
-#             setattr(user, key, val)
-#         db.session.commit()
-#     else:
-#         abort(404)
-
-#     return '', 204
-
-#   def delete(self):
-#     # 削除
-#     id = request.args.get('id')
-#     user = Book.query.filter_by(id=id).first()
-#     if user :
-#         db.session.delete(user)
-#         db.session.commit()
-#         return '', 204
-#     else:
-#       abort(404)

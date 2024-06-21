@@ -15,6 +15,10 @@ services:
     build: ./py_context   # python3のbuild contextを指定
     environment:
       FLASK_APP: /app/app.py
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_HOST: db
+      DB_NAME: booker
     ports:
       - "5001:5000"
     volumes: 
@@ -39,11 +43,57 @@ services:
       TZ: 'Asia/Tokyo'  # タイムゾーンを日本時間に設定
     volumes:
       - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password  # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
+    # command: --default-authentication-plugin=mysql_native_password  # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
+    command: --mysql_native_password=ON  # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
     ports:
       - 3306:3306  # ホストマシンのポート33306を、docker内のポート3306に接続する
     networks:
       - app-net
+  
+  celery:
+    build: ./py_context
+    volumes:
+      - ./app:/app
+    environment:
+      FLASK_APP: /app/app.py
+      FLASK_ENV: development
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_HOST: db
+      DB_NAME: booker
+      CELERY_BROKER_URL: redis://redis:6379
+      CELERY_RESULT_BACKEND: redis://redis:6379
+    command: celery -A app.celery worker --loglevel=info
+    depends_on:
+      - redis
+      - db
+    networks:
+      - app-net
+
+  redis:
+    image: "redis:alpine"
+    # build: ./py_context
+    ports:
+      - "6379:6379"
+    networks:
+      - app-net
+
+  flower:
+    image: mher/flower:latest
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379
+      CELERY_RESULT_BACKEND: redis://redis:6379
+    command: ['celery', '--broker=redis://redis:6379', 'flower', '--port=5555']
+    expose:
+      - 5555
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery
+    networks:
+      - app-net
+
 volumes:
   mysql_data:
 

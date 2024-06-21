@@ -12,3 +12,7 @@ flask-migrate
 marshmallow
 marshmallow-sqlalchemy
 python-dotenv
+Celery
+redis
+flower
+pytz
