@@ -33,12 +33,21 @@ class Book(db.Model):
 #     fields = ("id", "auction_id", "created_at")
 
 # book_schema = BookSchema(many=True)
-  # def to_dict(self):
-  #     return {
-  #         'id': self.id,
-  #         'close_time': self.close_time.strftime('%Y-%m-%d %H:%M:%S') if self.close_time else None,
-  #         # 他のフィールドを辞書に追加
-  #     }
+  def to_dict(self):
+      return {
+          'id': self.id,
+          'auction_id': self.auction_id if self.auction_id else None,
+          'product_name': self.product_name if self.product_name else None,
+          'bid_first_amount': self.bid_first_amount if self.bid_first_amount else None,
+          'max_amount': self.max_amount if self.max_amount else None,
+          'seconds': self.seconds if self.seconds else None,
+          'is_processed': self.is_processed if self.is_processed else None,
+          'bid_time': self.bid_time if self.bid_time else None,
+          'is_succeeded': self.is_succeeded if self.is_succeeded else None,
+          'error': self.error if self.error else None,
+          'close_time': self.close_time.strftime('%Y-%m-%d %H:%M:%S') if self.close_time else None,
+          # 他のフィールドを辞書に追加
+      }
 
 class Bookapi(Resource):
   def get(self):

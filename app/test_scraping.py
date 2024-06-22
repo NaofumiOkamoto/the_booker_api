@@ -11,7 +11,7 @@ import time
 
 # Yahooにログインして入札する
 # @celery.task(name="app.hoge")
-def hoge(auction_id):
+def hoge(auction_id, bid_first_amount):
   FILENAME = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"images/{auction_id}.png")
   try:
     options = webdriver.ChromeOptions()
@@ -55,7 +55,7 @@ def hoge(auction_id):
     # 金額入力
     bid_amount_input = driver.find_element(By.XPATH, "//*[@id='BidModals']/div[2]/div[2]/div[2]/form/div[1]/label/input")
     bid_amount_input.clear()
-    bid_amount_input.send_keys('1500')
+    bid_amount_input.send_keys(bid_first_amount)
     time.sleep(1)
     # 確認ボタン
     confirm_button = driver.find_element(By.XPATH, "//*[@id='BidModals']/div[2]/div[2]/div[2]/form/div[3]/span/input")
