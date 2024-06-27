@@ -13,7 +13,7 @@ import time
 def hoge(id):
     options = webdriver.ChromeOptions()
     driver = webdriver.Remote(
-                command_executor = 'http://the_booker_api-selenium-1:4444/wd/hub',
+                command_executor = 'http://selenium:4444/wd/hub',
                 options = options
                 )
 
