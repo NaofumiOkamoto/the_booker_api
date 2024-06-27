@@ -67,7 +67,7 @@ def schedule_task():
             return jsonify({"error": "close_time is in the past"}), 400
         
         print(f'-----start run_test.apply_async--{book.auction_id}------')
-        task = run_test.apply_async(args=[book.auction_id, book.first_bid_amount], countdown=delay) 
+        task = run_test.apply_async(args=[book.auction_id, book.bid_first_amount], countdown=delay) 
         print('-----end run_test.apply_async--------')
         tasks.append(task.id)
         print(task.id)
