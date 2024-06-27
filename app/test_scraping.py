@@ -6,11 +6,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from models.book import Bookapi, Book
 from database import db
-from celery_utils import make_celery
 import time
 
 # Yahooにログインして入札する
-# @celery.task(name="app.hoge")
 def hoge(auction_id, bid_first_amount):
   FILENAME = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"images/{auction_id}.png")
   try:
@@ -76,6 +74,8 @@ def hoge(auction_id, bid_first_amount):
     return 'success'
   except Exception as e:
     print('hogeでエラー: ', e)
+    driver.save_screenshot(FILENAME)
+    driver.quit()
     from app import app
     with app.app_context():  # app_context内で実行
       book = Book.query.filter_by(auction_id=auction_id).first()
@@ -85,6 +85,4 @@ def hoge(auction_id, bid_first_amount):
       if book:
         db.session.add(book)
         db.session.commit()
-    driver.save_screenshot(FILENAME)
-    driver.quit()
     return 'failed'
