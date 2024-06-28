@@ -49,7 +49,9 @@ def hoge(auction_id, bid_first_amount):
     # ポップアップあったら消す
     error_place = 'ポップアップ消す'
     prMdl = driver.find_element(By.XPATH, "//*[@id='js-prMdl-close']")
-    prMdl.click()
+    print(prMdl)
+    if (prMdl):
+      prMdl.click()
     time.sleep(1)
     # 入札するボタン
     error_place = '入札ボタン押す'
