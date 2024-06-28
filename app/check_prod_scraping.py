@@ -9,7 +9,7 @@ from models.book import Bookapi, Book
 from database import db
 import time
 
-# Yahooにログインして入札する
+# 商品情報を取得する
 def hoge(id):
     options = webdriver.ChromeOptions()
     driver = webdriver.Remote(
