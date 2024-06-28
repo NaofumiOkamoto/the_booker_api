@@ -43,6 +43,7 @@ def schedule_task():
     books = Book.query.filter(
         Book.close_time > now_jst,
         Book.close_time < now_jst_5,
+        Book.task_id == None,
         Book.bid_time == None
     ).all()
 
@@ -70,6 +71,9 @@ def schedule_task():
         task = run_test.apply_async(args=[book.auction_id, book.bid_first_amount], countdown=delay) 
         print('-----end run_test.apply_async--------')
         tasks.append(task.id)
+        book.task_id = task.id
+        db.session.add(book)
+        db.session.commit()
         print(task.id)
 
     return jsonify({'tasks': tasks, 'books': [book.to_dict() for book in books]}), 202

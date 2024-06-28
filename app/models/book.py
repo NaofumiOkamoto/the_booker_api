@@ -20,6 +20,7 @@ class Book(db.Model):
   max_amount = db.mapped_column(db.Integer)
   seconds = db.mapped_column(db.Integer)
   is_processed = db.mapped_column(db.Boolean)
+  task_id = db.mapped_column(db.String(255))
   bid_time = db.mapped_column(db.DateTime)
   is_succeeded = db.mapped_column(db.Boolean)
   error = db.mapped_column(db.Text)
