@@ -8,6 +8,13 @@ from models.book import Bookapi, Book
 from database import db
 import time
 
+def pop_up_click(el):
+  try:
+    el.click()
+  except Exception as e:
+    print(e)
+
+
 # Yahooにログインして入札する
 def hoge(auction_id, bid_first_amount):
   FILENAME = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"images/{auction_id}.png")
@@ -51,9 +58,8 @@ def hoge(auction_id, bid_first_amount):
     print('ポップアップ取得前')
     prMdl = driver.find_element(By.XPATH, "//*[@id='js-prMdl-close']")
     print('ポップアップあるか判定前', prMdl)
-    if (prMdl):
-      print('ポップアップあるか判定後', prMdl)
-      prMdl.click()
+    pop_up_click(prMdl)
+    print('ポップアップクリックした後')
     time.sleep(1)
     # 入札するボタン
     error_place = '入札ボタン押す'
