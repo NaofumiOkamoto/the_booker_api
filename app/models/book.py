@@ -22,7 +22,7 @@ class Book(db.Model):
   is_processed = db.mapped_column(db.Boolean)
   bid_time = db.mapped_column(db.DateTime)
   is_succeeded = db.mapped_column(db.Boolean)
-  error = db.mapped_column(db.String(255))
+  error = db.mapped_column(db.Text)
   close_time = db.mapped_column(db.DateTime)
   created_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
   updated_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')), onupdate=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
