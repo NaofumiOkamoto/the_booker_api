@@ -9,7 +9,7 @@ class User(db.Model):
   __tablename__ = 'user'
 
   id = db.mapped_column(db.Integer, primary_key=True)
-  uid = db.mapped_column(db.Integer, nullable=False)
+  uid = db.mapped_column(db.String(255), nullable=False)
   yahoo_password = db.mapped_column(db.String(255))
   created_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
   updated_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')), onupdate=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
