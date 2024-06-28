@@ -45,7 +45,7 @@ def hoge(auction_id, bid_first_amount):
     # パスワード
     error_place = 'パスワード入力'
     password_bar = driver.find_element(By.ID, "password")
-    password_bar.send_keys('nnoo0069')
+    password_bar.send_keys('nnoo0069?')
     login_button = driver.find_element(By.XPATH, "//*[@id='content']/div[1]/div/form/div[2]/div/div[1]/div[2]/div[3]/button")
     login_button.click()
     time.sleep(1)
