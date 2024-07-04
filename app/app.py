@@ -25,11 +25,11 @@ api = Api(app)
 init_db(app)
 
 @celery.task(name="app.run_test")
-def run_test(auction_id, bid_first_amount):
+def run_test(auction_id, bid_first_amount, user_id):
     with app.app_context():
         print('run_test auction_id: ', auction_id)
         from test_scraping import hoge
-        result = hoge(auction_id, bid_first_amount)
+        result = hoge(auction_id, bid_first_amount, user_id)
         return f"Task completed at {datetime.datetime.now().isoformat()} - Result: {result}"
 
 @app.route('/schedule', methods=['GET'])
