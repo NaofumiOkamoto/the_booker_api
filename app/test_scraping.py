@@ -63,24 +63,24 @@ def hoge(auction_id, bid_first_amount, user_id):
     print('ポップアップあるか判定前', prMdl)
     pop_up_click(prMdl)
     print('ポップアップクリックした後')
-    time.sleep(1)
+    time.sleep(2)
     # 入札するボタン
     error_place = '入札ボタン押す'
     bid_button = driver.find_element(By.XPATH, "//*[@id='l-sub']/div[2]/ul/li[1]/div[1]/div[2]/div[2]/div/div/a")
     bid_button.click()
-    time.sleep(2)
+    time.sleep(3)
     # 金額入力
     error_place = '金額入力'
     bid_amount_input = driver.find_element(By.XPATH, "//*[@id='BidModals']/div[2]/div[2]/div[2]/form/div[1]/label/input")
     bid_amount_input.clear()
     bid_amount_input.send_keys(bid_first_amount)
-    time.sleep(1)
+    time.sleep(2)
     # 確認ボタン
     error_place = '確認ボタン押す'
     confirm_button = driver.find_element(By.XPATH, "//*[@id='BidModals']/div[2]/div[2]/div[2]/form/div[3]/span/input")
     confirm_button.click()
     driver.save_screenshot(FILENAME)
-    time.sleep(2)
+    time.sleep(5)
 
     # 入札後のxpath（入札を受け付けました。あなたが現在の最高額入札者です。）
     # //*[@id="yaucBidAct"]/div[2]/div[1]/div[2]/div[2]/div[1]
@@ -98,6 +98,7 @@ def hoge(auction_id, bid_first_amount, user_id):
     return 'success'
   except Exception as e:
     print('hogeでエラー: ', e)
+    time.sleep(3)
     driver.save_screenshot(FILENAME)
     driver.quit()
     from app import app
