@@ -5,6 +5,7 @@ from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from models.book import Bookapi, Book
+from models.user import Userapi, User
 from database import db
 import time
 
@@ -16,8 +17,10 @@ def pop_up_click(el):
 
 
 # Yahooにログインして入札する
-def hoge(auction_id, bid_first_amount):
+def hoge(auction_id, bid_first_amount, user_id):
   FILENAME = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"images/{auction_id}.png")
+  user = User.query.filter_by(uid=user_id).first()
+  print('----user----', user)
   error_place = ''
   try:
     options = webdriver.ChromeOptions()
@@ -38,14 +41,14 @@ def hoge(auction_id, bid_first_amount):
     # id
     error_place = 'id入力'
     login_bar = driver.find_element(By.ID, "login_handle")
-    login_bar.send_keys('naofumi-okamoto-0803')
+    login_bar.send_keys(user.yahoo_id)
     next_button = driver.find_element(By.XPATH, "//*[@id='content']/div[1]/div/form/div[1]/div[1]/div[2]/div/button")
     next_button.click()
     time.sleep(1)
     # パスワード
     error_place = 'パスワード入力'
     password_bar = driver.find_element(By.ID, "password")
-    password_bar.send_keys('nnoo0069?')
+    password_bar.send_keys(user.yahoo_password)
     login_button = driver.find_element(By.XPATH, "//*[@id='content']/div[1]/div/form/div[2]/div/div[1]/div[2]/div[3]/button")
     login_button.click()
     time.sleep(1)

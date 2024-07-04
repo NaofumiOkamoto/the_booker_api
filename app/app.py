@@ -8,6 +8,7 @@ from database import init_db
 from flask_restful import Api
 from flask_marshmallow import Marshmallow
 from models.book import Book, Bookapi
+from models.user import User, Userapi
 from test_scraping import hoge
 from database import db
 
@@ -68,7 +69,7 @@ def schedule_task():
             return jsonify({"error": "close_time is in the past"}), 400
         
         print(f'-----start run_test.apply_async--{book.auction_id}------')
-        task = run_test.apply_async(args=[book.auction_id, book.bid_first_amount], countdown=delay) 
+        task = run_test.apply_async(args=[book.auction_id, book.bid_first_amount, book.user_id], countdown=delay) 
         print('-----end run_test.apply_async--------')
         tasks.append(task.id)
         book.task_id = task.id
@@ -104,6 +105,7 @@ def get_img():
 
 
 api.add_resource(Bookapi, '/book')
+api.add_resource(Userapi, '/user')
 
 ##server run
 if __name__ == "__main__":
