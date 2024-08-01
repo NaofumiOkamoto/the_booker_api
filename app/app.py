@@ -103,7 +103,7 @@ def get_img():
 
 @app.route("/redirect", methods=["GET"])
 def redirect():
-    return 'ここで The Booker を立ち上げる'
+    return redirect('thebooker://(tab)/book')
 
 
 api.add_resource(Bookapi, '/book')
