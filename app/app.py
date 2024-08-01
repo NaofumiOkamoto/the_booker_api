@@ -107,8 +107,6 @@ def redirect_thebooker():
     print(request.headers)
     print('----- request get data------')
     print(request.get_data)
-    print('----- request get json------')
-    print(request.get_json())
     return redirect('thebooker://(tab)/book')
 
 
