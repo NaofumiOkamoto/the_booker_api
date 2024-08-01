@@ -101,7 +101,9 @@ def get_img():
         print('画像なし')
         return jsonify({'status': ''}), 404
 
-
+@app.route("/redirect", methods=["GET"])
+def redirect():
+    return 'ここで The Booker を立ち上げる'
 
 
 api.add_resource(Bookapi, '/book')
