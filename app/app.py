@@ -3,7 +3,7 @@ import time
 import pytz
 import re
 from celery_utils import make_celery
-from flask import Flask,request,jsonify,send_file
+from flask import Flask,request,jsonify,send_file,redirect
 from database import init_db
 from flask_restful import Api
 from flask_marshmallow import Marshmallow
