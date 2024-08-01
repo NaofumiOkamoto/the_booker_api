@@ -107,13 +107,12 @@ def redirect_thebooker():
     print(request.headers)
     print('----- request get data------')
     data = request.get_data
-    print('----- data------')
-    print(data)
     print('----- str data------')
     print(str(data))
-    print('----- str data .split------')
-    print(str(data).split('?'))
-    redirect('thebooker://(tab)/book?test=test')
+    print('----- str data .split[-1][0]------')
+    params = str(data).split('?')[-1].split("'")[0]
+    print(params)
+    return redirect(f'thebooker://(tab)/book?{params}')
 
 
 api.add_resource(Bookapi, '/book')
