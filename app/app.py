@@ -102,7 +102,7 @@ def get_img():
         return jsonify({'status': ''}), 404
 
 @app.route("/redirect", methods=["GET"])
-def redirect():
+def redirect_thebooker():
     return redirect('thebooker://(tab)/book')
 
 
