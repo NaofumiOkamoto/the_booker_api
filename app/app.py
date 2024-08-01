@@ -106,7 +106,7 @@ def redirect_thebooker():
     print('----- request headers------')
     print(request.headers)
     print('----- request get data------')
-    path = request.get_data.split('?')
+    path = request.get_data().split('?')
     print(path)
     print(path[1])
     return redirect(f'thebooker://(tab)/book?{path[1]}')
