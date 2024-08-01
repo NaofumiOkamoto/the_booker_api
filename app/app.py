@@ -103,6 +103,10 @@ def get_img():
 
 @app.route("/redirect", methods=["GET"])
 def redirect_thebooker():
+    print('----- request headers------')
+    print(request.headers)
+    print('----- request get data------')
+    print(request.get_data)
     return redirect('thebooker://(tab)/book')
 
 
