@@ -2,6 +2,9 @@ import datetime
 import time
 import pytz
 import re
+import requests
+import os
+import jwt
 from celery_utils import make_celery
 from flask import Flask,request,jsonify,send_file,redirect
 from database import init_db
@@ -23,6 +26,8 @@ celery = make_celery(app)
 ma = Marshmallow(app)
 api = Api(app)
 init_db(app)
+EBAY_AUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token'
+JWT_SECRET = 'test'
 
 @celery.task(name="app.run_test")
 def run_test(auction_id, bid_first_amount, user_id):
@@ -103,17 +108,62 @@ def get_img():
 
 @app.route("/redirect", methods=["GET"])
 def redirect_thebooker():
-    print('----- request headers------')
-    print(request.headers)
-    print('----- request get data------')
     data = request.get_data
-    print('----- str data------')
-    print(str(data))
-    print('----- str data .split[-1][0]------')
     params = str(data).split('?')[-1].split("'")[0]
     print(params)
     return redirect(f'thebooker://(tab)/book?{params}')
 
+@app.route('/api/authenticate', methods=['POST'])
+def authenticate():
+    print('start authenticate')
+    print('REDIRECT_URI', os.getenv('REDIRECT_URI'))
+    code = request.json.get('fullyDecodedStr')
+    print('code', code)
+    if not code:
+        return jsonify({'error': 'No code provided'}), 400
+
+    try:
+        # eBayのアクセストークンを取得
+        token_response = requests.post(EBAY_AUTH_URL, data={
+            'code': code,
+            'grant_type': 'authorization_code',
+            'redirect_uri': os.getenv('REDIRECT_URI'),
+            'client_id': os.getenv('CLIENT_ID'),
+            'client_secret': os.getenv('CLIENT_SECRET')
+        })
+        print('token_response: ', token_response)
+        print('token_response.json(): ', token_response.json())
+        token_response.raise_for_status()
+        ebay_access_token = token_response.json()['access_token']
+        print('ebay_access_token: ', ebay_access_token)
+
+        # eBayのユーザー情報を取得
+        user_response = requests.get('https://api.ebay.com/identity/v1/user', headers={
+            'Authorization': f'Bearer {ebay_access_token}'
+        })
+        print('user_response: ', user_response)
+        user_response.raise_for_status()
+        ebay_user = user_response.json()
+        ebay_user_id = ebay_user['userId']
+        print('ebay_user: ', ebay_user)
+
+        # Bookerアプリのユーザーを見つけるか作成
+        # booker_user = find_or_create_user(ebay_user_id, ebay_user)
+
+        # JWTトークンを発行
+        token = jwt.encode({
+            # 'id': booker_user['id'],
+            # 'name': booker_user['name'],
+            'id': 1,
+            'name': 'okamoto',
+            'exp': datetime.datetime.datetime() + datetime.timedelta(hours=1)
+        }, JWT_SECRET, algorithm='HS256')
+        print('token: ', token)
+
+        return jsonify({'token': token})
+
+    except requests.RequestException as e:
+        return jsonify({'error': 'Authentication failed', 'details': str(e)}), 400
 
 api.add_resource(Bookapi, '/book')
 api.add_resource(Userapi, '/user')
