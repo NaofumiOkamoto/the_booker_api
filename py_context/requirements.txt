@@ -16,3 +16,4 @@ Celery
 redis
 flower
 pytz
+PyJWT
