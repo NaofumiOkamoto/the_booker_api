@@ -117,6 +117,8 @@ def redirect_thebooker():
 def authenticate():
     print('start authenticate')
     print('REDIRECT_URI', os.getenv('REDIRECT_URI'))
+    print('REDIRECT_URI', os.getenv('CLIENT_ID'))
+    print('REDIRECT_URI', os.getenv('CLIENT_SECRET'))
     code = request.json.get('fullyDecodedStr')
     print('code', code)
     if not code:
@@ -124,13 +126,16 @@ def authenticate():
 
     try:
         # eBayのアクセストークンを取得
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': f'Basic btoa({os.getenv('CLIENT_ID')}:{os.getenv('CLIENT_SECRET')})'
+        }
         token_response = requests.post(EBAY_AUTH_URL, data={
             'code': code,
             'grant_type': 'authorization_code',
-            'redirect_uri': os.getenv('REDIRECT_URI'),
-            'client_id': os.getenv('CLIENT_ID'),
-            'client_secret': os.getenv('CLIENT_SECRET')
-        })
+            'redirect_uri': os.getenv('REDIRECT_URI')
+        }, headers=headers
+        )
         print('token_response: ', token_response)
         print('token_response.json(): ', token_response.json())
         token_response.raise_for_status()
