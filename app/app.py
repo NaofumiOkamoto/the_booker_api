@@ -5,6 +5,7 @@ import re
 import requests
 import os
 import jwt
+import base64
 from celery_utils import make_celery
 from flask import Flask,request,jsonify,send_file,redirect
 from database import init_db
@@ -128,7 +129,7 @@ def authenticate():
         # eBayのアクセストークンを取得
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': f'Basic btoa({os.getenv('CLIENT_ID')}:{os.getenv('CLIENT_SECRET')})'
+            'Authorization': f'Basic {base64.b64encode(f"{os.getenv('CLIENT_ID')}:{os.getenv('CLIENT_SECRET')}".encode()).decode()}'
         }
         token_response = requests.post(EBAY_AUTH_URL, data={
             'code': code,
