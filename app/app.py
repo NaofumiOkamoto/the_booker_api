@@ -145,7 +145,7 @@ def authenticate():
         print('ebay_access_token: ', ebay_access_token)
 
         # eBayのユーザー情報を取得
-        user_response = requests.get('https://apiz.ebay.com/commerce/identity/v1/user', headers={
+        user_response = requests.get('https://apiz.ebay.com/commerce/identity/v1/user/email', headers={
             'Authorization': f'Bearer {ebay_access_token}'
         })
         user_response.raise_for_status()
