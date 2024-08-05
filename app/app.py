@@ -133,7 +133,8 @@ def authenticate():
         }
         token_response = requests.post(EBAY_AUTH_URL, data={
             'code': code,
-            'grant_type': 'authorization_code',
+            # 'grant_type': 'authorization_code',
+            'grant_type': 'client_credentials',
             'redirect_uri': os.getenv('REDIRECT_URI'),
             'scope': 'https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.email.readonly'
         }, headers=headers
@@ -145,7 +146,7 @@ def authenticate():
         print('ebay_access_token: ', ebay_access_token)
 
         # eBayのユーザー情報を取得
-        user_response = requests.get('https://apiz.ebay.com/commerce/identity/v1/user/email', headers={
+        user_response = requests.get('https://apiz.ebay.com/commerce/identity/v1/user', headers={
             'Authorization': f'Bearer {ebay_access_token}'
         })
         user_response.raise_for_status()
