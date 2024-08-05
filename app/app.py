@@ -135,7 +135,7 @@ def authenticate():
             'code': code,
             'grant_type': 'authorization_code',
             'redirect_uri': os.getenv('REDIRECT_URI'),
-            'scope': 'https://api.ebay.com/oauth/api_scope/commerce.identity.email.readonly'
+            'scope': 'https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.email.readonly'
         }, headers=headers
         )
         print('token_response: ', token_response)
