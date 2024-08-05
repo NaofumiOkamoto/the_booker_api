@@ -162,7 +162,7 @@ def authenticate():
             # 'name': booker_user['name'],
             'id': 1,
             'name': 'okamoto',
-            'exp': datetime.datetime.datetime() + datetime.timedelta(hours=1)
+            'exp': datetime.datetime() + datetime.timedelta(hours=1)
         }, JWT_SECRET, algorithm='HS256')
         print('token: ', token)
 
