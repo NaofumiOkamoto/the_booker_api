@@ -133,8 +133,7 @@ def authenticate():
         }
         token_response = requests.post(EBAY_AUTH_URL, data={
             'code': code,
-            # 'grant_type': 'authorization_code',
-            'grant_type': 'client_credentials',
+            'grant_type': 'authorization_code',
             'redirect_uri': os.getenv('REDIRECT_URI'),
             'scope': 'https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.email.readonly'
         }, headers=headers
@@ -168,7 +167,7 @@ def authenticate():
         }, JWT_SECRET, algorithm='HS256')
         print('token: ', token)
 
-        return jsonify({'token': token})
+        return jsonify({'token': token, 'ebay_user': ebay_user})
 
     except requests.RequestException as e:
         return jsonify({'error': 'Authentication failed', 'details': str(e)}), 400
