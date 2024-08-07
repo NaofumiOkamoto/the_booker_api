@@ -33,7 +33,7 @@ class EbayToken(db.Model):
   def create_token(data):
       try:
           token_object = EbayToken(
-              # user_id=data["user_id"],
+              user_id=data["user_id"],
               access_token=data["access_token"],
               expires_in=data["expires_in"],
               refresh_token=data["refresh_token"],
