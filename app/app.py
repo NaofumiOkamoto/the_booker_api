@@ -153,9 +153,9 @@ def authenticate():
         user_response.raise_for_status()
         print('user_response: ', user_response)
         ebay_user = user_response.json()
-        # ebay_user_id = ebay_user['userId']
+        user_id = ebay_user['userId']
 
-        create_token = dict(**token_response.json(), **ebay_user)
+        create_token = dict(**token_response.json(), **{user_id})
         print('create_token: ', create_token)
         EbayToken.create_token(create_token)
 
