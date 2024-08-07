@@ -143,11 +143,8 @@ def authenticate():
         }, headers=headers
         )
         print('token_response: ', token_response)
-        print('token_response.json(): ', token_response.json())
         token_response.raise_for_status()
         ebay_access_token = token_response.json()['access_token']
-        print('ebay_access_token: ', ebay_access_token)
-        EbayToken.create_token(token_response.json())
 
         # eBayのユーザー情報を取得
         user_response = requests.get('https://apiz.sandbox.ebay.com/commerce/identity/v1/user', headers={
@@ -157,7 +154,10 @@ def authenticate():
         print('user_response: ', user_response)
         ebay_user = user_response.json()
         # ebay_user_id = ebay_user['userId']
-        print('ebay_user: ', ebay_user)
+
+        create_token = dict(**token_response, **ebay_user)
+        print('create_token: ', create_token)
+        EbayToken.create_token(create_token)
 
         # Bookerアプリのユーザーを見つけるか作成
         # booker_user = find_or_create_user(ebay_user_id, ebay_user)
@@ -170,7 +170,6 @@ def authenticate():
             'name': 'okamoto',
             'exp': datetime.datetime.now() + datetime.timedelta(hours=1)
         }, JWT_SECRET, algorithm='HS256')
-        print('token: ', token)
 
         return jsonify({'token': token, 'ebay_user': ebay_user})
 
