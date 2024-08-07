@@ -27,7 +27,8 @@ celery = make_celery(app)
 ma = Marshmallow(app)
 api = Api(app)
 init_db(app)
-EBAY_AUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token'
+# EBAY_AUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token'
+EBAY_AUTH_URL_SAND_BOX = 'https://api.sandbox.ebay.com/identity/v1/oauth2/token'
 JWT_SECRET = 'test'
 
 @celery.task(name="app.run_test")
@@ -118,8 +119,11 @@ def redirect_thebooker():
 def authenticate():
     print('start authenticate')
     print('REDIRECT_URI', os.getenv('REDIRECT_URI'))
-    print('REDIRECT_URI', os.getenv('CLIENT_ID'))
-    print('REDIRECT_URI', os.getenv('CLIENT_SECRET'))
+    print('CLIENT_ID', os.getenv('CLIENT_ID'))
+    print('CLIENT_SECRET', os.getenv('CLIENT_SECRET'))
+    print('REDIRECT_URI_SAND_BOX', os.getenv('REDIRECT_URI_SAND_BOX'))
+    print('CLIENT_ID_SAND_BOX', os.getenv('CLIENT_ID_SAND_BOX'))
+    print('CLIENT_SECRET_SAND_BOX', os.getenv('CLIENT_SECRET_SAND_BOX'))
     code = request.json.get('fullyDecodedStr')
     print('code', code)
     if not code:
@@ -129,13 +133,12 @@ def authenticate():
         # eBayのアクセストークンを取得
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': f'Basic {base64.b64encode(f"{os.getenv('CLIENT_ID')}:{os.getenv('CLIENT_SECRET')}".encode()).decode()}'
+            'Authorization': f'Basic {base64.b64encode(f"{os.getenv('CLIENT_ID_SAND_BOX')}:{os.getenv('CLIENT_SECRET_SAND_BOX')}".encode()).decode()}'
         }
-        token_response = requests.post(EBAY_AUTH_URL, data={
+        token_response = requests.post(EBAY_AUTH_URL_SAND_BOX, data={
             'code': code,
             'grant_type': 'authorization_code',
-            'redirect_uri': os.getenv('REDIRECT_URI'),
-            'scope': 'https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.email.readonly'
+            'redirect_uri': os.getenv('REDIRECT_URI_SAND_BOX'),
         }, headers=headers
         )
         print('token_response: ', token_response)
@@ -145,7 +148,7 @@ def authenticate():
         print('ebay_access_token: ', ebay_access_token)
 
         # eBayのユーザー情報を取得
-        user_response = requests.get('https://apiz.ebay.com/commerce/identity/v1/user', headers={
+        user_response = requests.get('https://apiz.sandbox.ebay.com/commerce/identity/v1/user', headers={
             'Authorization': f'Bearer {ebay_access_token}'
         })
         user_response.raise_for_status()
