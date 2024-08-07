@@ -29,7 +29,6 @@ services:
     tty: true             # ターミナル入力を受け付ける
 
     depends_on:           # seleniumコンテナの後で起動させるように指定
-      - selenium
       - db
     # command: flask run --host=0.0.0.0 --port=5000
     command: python app.py
