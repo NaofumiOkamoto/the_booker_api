@@ -13,6 +13,7 @@ from flask_restful import Api
 from flask_marshmallow import Marshmallow
 from models.book import Book, Bookapi
 from models.user import User, Userapi
+from models.ebay import EbayToken
 from test_scraping import hoge
 from database import db
 
@@ -146,6 +147,7 @@ def authenticate():
         token_response.raise_for_status()
         ebay_access_token = token_response.json()['access_token']
         print('ebay_access_token: ', ebay_access_token)
+        EbayToken.create_token(token_response.json())
 
         # eBayのユーザー情報を取得
         user_response = requests.get('https://apiz.sandbox.ebay.com/commerce/identity/v1/user', headers={
@@ -154,7 +156,7 @@ def authenticate():
         user_response.raise_for_status()
         print('user_response: ', user_response)
         ebay_user = user_response.json()
-        ebay_user_id = ebay_user['userId']
+        # ebay_user_id = ebay_user['userId']
         print('ebay_user: ', ebay_user)
 
         # Bookerアプリのユーザーを見つけるか作成
