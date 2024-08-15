@@ -176,6 +176,10 @@ def authenticate():
     except requests.RequestException as e:
         return jsonify({'error': 'Authentication failed', 'details': str(e)}), 400
 
+@app.route("/test", methods=["GET"])
+def test():
+    return jsonify({'test': 'OK'})
+
 api.add_resource(Bookapi, '/book')
 api.add_resource(Userapi, '/user')
 
