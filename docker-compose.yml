@@ -52,52 +52,52 @@ services:
     networks:
       - app-net
   
-  celery:
-    build: ./py_context
-    container_name: celery
-    volumes:
-      - ./app:/app
-    environment:
-      FLASK_APP: /app/app.py
-      FLASK_ENV: development
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_HOST: db
-      DB_NAME: booker
-      CELERY_BROKER_URL: redis://redis:6379
-      CELERY_RESULT_BACKEND: redis://redis:6379
-    command: celery -A app.celery worker --loglevel=info
-    depends_on:
-      - redis
-      - db
-    networks:
-      - app-net
+  # celery:
+  #   build: ./py_context
+  #   container_name: celery
+  #   volumes:
+  #     - ./app:/app
+  #   environment:
+  #     FLASK_APP: /app/app.py
+  #     FLASK_ENV: development
+  #     DB_USER: root
+  #     DB_PASSWORD: root
+  #     DB_HOST: db
+  #     DB_NAME: booker
+  #     CELERY_BROKER_URL: redis://redis:6379
+  #     CELERY_RESULT_BACKEND: redis://redis:6379
+  #   command: celery -A app.celery worker --loglevel=info
+  #   depends_on:
+  #     - redis
+  #     - db
+  #   networks:
+  #     - app-net
 
-  redis:
-    image: "redis:alpine"
-    container_name: redis
-    # build: ./py_context
-    ports:
-      - "6379:6379"
-    networks:
-      - app-net
+  # redis:
+  #   image: "redis:alpine"
+  #   container_name: redis
+  #   # build: ./py_context
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - app-net
 
-  flower:
-    image: mher/flower:latest
-    container_name: flower
-    environment:
-      CELERY_BROKER_URL: redis://redis:6379
-      CELERY_RESULT_BACKEND: redis://redis:6379
-    command: ['celery', '--broker=redis://redis:6379', 'flower', '--port=5555']
-    expose:
-      - 5555
-    ports:
-      - "5555:5555"
-    depends_on:
-      - redis
-      - celery
-    networks:
-      - app-net
+  # flower:
+  #   image: mher/flower:latest
+  #   container_name: flower
+  #   environment:
+  #     CELERY_BROKER_URL: redis://redis:6379
+  #     CELERY_RESULT_BACKEND: redis://redis:6379
+  #   command: ['celery', '--broker=redis://redis:6379', 'flower', '--port=5555']
+  #   expose:
+  #     - 5555
+  #   ports:
+  #     - "5555:5555"
+  #   depends_on:
+  #     - redis
+  #     - celery
+  #   networks:
+  #     - app-net
 
 volumes:
   mysql_data:
