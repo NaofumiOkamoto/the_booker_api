@@ -1,4 +1,4 @@
-requests
+requests==2.25.1
 selenium
 BeautifulSoup4
 pandas
