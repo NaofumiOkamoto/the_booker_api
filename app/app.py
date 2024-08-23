@@ -139,12 +139,13 @@ def authenticate():
             'Authorization': f'Basic {base64.b64encode(f"{os.getenv('CLIENT_ID_SAND_BOX')}:{os.getenv('CLIENT_SECRET_SAND_BOX')}".encode()).decode()}'
         }
         token_response = requests.post(EBAY_AUTH_URL_SAND_BOX, data={
-            'code': code,
-            'grant_type': 'authorization_code',
-            'redirect_uri': os.getenv('REDIRECT_URI_SAND_BOX'),
-        }, headers=headers
+                'code': code,
+                'grant_type': 'authorization_code',
+                'redirect_uri': os.getenv('REDIRECT_URI_SAND_BOX'),
+            }, headers=headers
         )
         print('token_response: ', token_response)
+        print('token_response.text: ', token_response.text)
         token_response.raise_for_status()
         ebay_access_token = token_response.json()['access_token']
 
@@ -164,16 +165,7 @@ def authenticate():
         # Bookerアプリのユーザーを見つけるか作成
         # booker_user = find_or_create_user(ebay_user_id, ebay_user)
 
-        # JWTトークンを発行
-        token = jwt.encode({
-            # 'id': booker_user['id'],
-            # 'name': booker_user['name'],
-            'id': 1,
-            'name': 'okamoto',
-            'exp': datetime.datetime.now() + datetime.timedelta(hours=1)
-        }, JWT_SECRET, algorithm='HS256')
-
-        return jsonify({'token': token, 'ebay_user': ebay_user})
+        return jsonify({'ebay_user': ebay_user})
 
     except requests.RequestException as e:
         return jsonify({'error': 'Authentication failed', 'details': str(e)}), 400
