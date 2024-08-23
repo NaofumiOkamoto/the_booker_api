@@ -145,7 +145,6 @@ def authenticate():
             }, headers=headers
         )
         print('token_response: ', token_response)
-        print('token_response.text: ', token_response.text)
         token_response.raise_for_status()
         ebay_access_token = token_response.json()['access_token']
 
@@ -153,6 +152,9 @@ def authenticate():
         user_response = requests.get('https://apiz.sandbox.ebay.com/commerce/identity/v1/user', headers={
             'Authorization': f'Bearer {ebay_access_token}'
         })
+        print('user_response: ', user_response)
+        print('user_response.text: ', user_response.text)
+
         user_response.raise_for_status()
         print('user_response: ', user_response)
         ebay_user = user_response.json()
