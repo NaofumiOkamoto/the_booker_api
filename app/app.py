@@ -128,6 +128,7 @@ def authenticate():
     print('CLIENT_ID_SAND_BOX', os.getenv('CLIENT_ID_SAND_BOX'))
     print('CLIENT_SECRET_SAND_BOX', os.getenv('CLIENT_SECRET_SAND_BOX'))
     code = request.json.get('fullyDecodedStr')
+    uid = request.json.get('uid')
     print('code', code)
     if not code:
         return jsonify({'error': 'No code provided'}), 400
@@ -160,17 +161,23 @@ def authenticate():
         ebay_user = user_response.json()
         user_id = ebay_user['userId']
 
-        create_token = dict(**token_response.json(), **{'user_id': user_id})
+        create_token = dict(**token_response.json(), **{'user_id': user_id}, **{'uid', uid})
         print('create_token: ', create_token)
         EbayToken.create_token(create_token)
 
         # Bookerアプリのユーザーを見つけるか作成
-        # booker_user = find_or_create_user(ebay_user_id, ebay_user)
 
         return jsonify({'ebay_user': ebay_user})
 
     except requests.RequestException as e:
         return jsonify({'error': 'Authentication failed', 'details': str(e)}), 400
+
+@app.route('/api/check-link-ebay', methods=['GET'])
+def check_link():
+    print('---------')
+    uid = request.args.get('uid')
+    print('uid', uid)
+    return jsonify({'result': 'OK'})
 
 @app.route("/api/test", methods=["GET"])
 def test():

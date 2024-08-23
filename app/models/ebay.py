@@ -9,6 +9,7 @@ class EbayToken(db.Model):
   __tablename__ = 'ebay_token'
 
   id = db.mapped_column(db.Integer, primary_key=True)
+  uid = db.mapped_column(db.String(255), nullable=False)
   user_id = db.mapped_column(db.String(255), nullable=False)
   access_token = db.mapped_column(db.Text)
   expires_in = db.mapped_column(db.Integer)
@@ -21,6 +22,7 @@ class EbayToken(db.Model):
   def to_dict(self):
     return {
       'id': self.id,
+      'uid': self.uid,
       'user_id': self.user_id if self.user_id else None,
       'access_token': self.access_token if self.access_token else None,
       'expires_in': self.expires_in if self.expires_in else None,
