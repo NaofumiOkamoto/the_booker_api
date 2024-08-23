@@ -16,6 +16,7 @@ from models.user import User, Userapi
 from models.ebay import EbayToken
 from test_scraping import hoge
 from database import db
+from flask_cors import CORS
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -28,6 +29,7 @@ celery = make_celery(app)
 ma = Marshmallow(app)
 api = Api(app)
 init_db(app)
+CORS(app)
 # EBAY_AUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token'
 EBAY_AUTH_URL_SAND_BOX = 'https://api.sandbox.ebay.com/identity/v1/oauth2/token'
 JWT_SECRET = 'test'
@@ -176,7 +178,7 @@ def authenticate():
     except requests.RequestException as e:
         return jsonify({'error': 'Authentication failed', 'details': str(e)}), 400
 
-@app.route("/test", methods=["GET"])
+@app.route("/api/test", methods=["GET"])
 def test():
     return jsonify({'test': 'OK'})
 

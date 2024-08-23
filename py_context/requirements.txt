@@ -17,3 +17,4 @@ redis
 flower
 pytz
 PyJWT
+flask-cors

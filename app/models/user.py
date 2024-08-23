@@ -10,8 +10,7 @@ class User(db.Model):
 
   id = db.mapped_column(db.Integer, primary_key=True)
   uid = db.mapped_column(db.String(255), nullable=False)
-  yahoo_id = db.mapped_column(db.String(255))
-  yahoo_password = db.mapped_column(db.String(255))
+  email = db.mapped_column(db.String(255), nullable=False)
   created_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
   updated_at = db.mapped_column(db.DateTime, nullable=False, default=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')), onupdate=lambda: datetime.now(zoneinfo.ZoneInfo('Asia/Tokyo')))
 
@@ -19,8 +18,7 @@ class User(db.Model):
     return {
       'id': self.id,
       'uid': self.uid if self.uid else None,
-      'yahoo_id': self.yahoo_id if self.yahoo_id else None,
-      'yahoo_password': self.yahoo_password if self.yahoo_password else None,
+      'email': self.email if self.email else None,
     }
 
 class Userapi(Resource):
