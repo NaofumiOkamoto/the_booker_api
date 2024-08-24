@@ -161,7 +161,7 @@ def authenticate():
         ebay_user = user_response.json()
         user_id = ebay_user['userId']
 
-        create_token = dict(**token_response.json(), **{'user_id': user_id}, **{'uid', uid})
+        create_token = dict(**token_response.json(), **{'user_id': user_id}, **{'uid': uid})
         print('create_token: ', create_token)
         EbayToken.create_token(create_token)
 
