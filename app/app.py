@@ -147,6 +147,7 @@ def authenticate():
             }, headers=headers
         )
         print('token_response: ', token_response)
+        print('token_response.access_token: ', token_response.text['access_token'])
         token_response.raise_for_status()
         ebay_access_token = token_response.json()['access_token']
 

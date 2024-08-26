@@ -40,7 +40,8 @@ class EbayToken(db.Model):
               expires_in=data["expires_in"],
               refresh_token=data["refresh_token"],
               refresh_token_expires_in=data["refresh_token_expires_in"],
-              token_type=data["token_type"]
+              token_type=data["token_type"],
+              uid=data["uid"]
           )
           db.session.add(token_object)
           db.session.commit()
