@@ -127,14 +127,14 @@ def authenticate():
     print('REDIRECT_URI_SAND_BOX', os.getenv('REDIRECT_URI_SAND_BOX'))
     print('CLIENT_ID_SAND_BOX', os.getenv('CLIENT_ID_SAND_BOX'))
     print('CLIENT_SECRET_SAND_BOX', os.getenv('CLIENT_SECRET_SAND_BOX'))
-    code = request.json.get('fullyDecodedStr')
-    uid = request.json.get('uid')
-    print('code: ', code)
-    print('uid: ', uid)
-    if not code:
-        return jsonify({'error': 'No code provided'}), 400
 
     try:
+        code = request.json.get('fullyDecodedStr')
+        uid = request.json.get('uid')
+        print('code: ', code)
+        print('uid: ', uid)
+        if not code:
+            return jsonify({'error': 'No code provided'}), 400
         # eBayのアクセストークンを取得
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
