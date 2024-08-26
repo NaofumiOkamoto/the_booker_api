@@ -52,26 +52,26 @@ services:
     networks:
       - app-net
   
-  celery:
-    build: ./py_context
-    container_name: celery
-    volumes:
-      - ./app:/app
-    environment:
-      FLASK_APP: /app/app.py
-      FLASK_ENV: development
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_HOST: db
-      DB_NAME: booker
-      CELERY_BROKER_URL: redis://redis:6379
-      CELERY_RESULT_BACKEND: redis://redis:6379
-    command: celery -A app.celery worker --loglevel=info
-    depends_on:
-      - redis
-      - db
-    networks:
-      - app-net
+  # celery:
+  #   build: ./py_context
+  #   container_name: celery
+  #   volumes:
+  #     - ./app:/app
+  #   environment:
+  #     FLASK_APP: /app/app.py
+  #     FLASK_ENV: development
+  #     DB_USER: root
+  #     DB_PASSWORD: root
+  #     DB_HOST: db
+  #     DB_NAME: booker
+  #     CELERY_BROKER_URL: redis://redis:6379
+  #     CELERY_RESULT_BACKEND: redis://redis:6379
+  #   command: celery -A app.celery worker --loglevel=info
+  #   depends_on:
+  #     - redis
+  #     - db
+  #   networks:
+  #     - app-net
 
   redis:
     image: "redis:alpine"

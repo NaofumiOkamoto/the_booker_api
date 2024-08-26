@@ -129,7 +129,8 @@ def authenticate():
     print('CLIENT_SECRET_SAND_BOX', os.getenv('CLIENT_SECRET_SAND_BOX'))
     code = request.json.get('fullyDecodedStr')
     uid = request.json.get('uid')
-    print('code', code)
+    print('code: ', code)
+    print('uid: ', uid)
     if not code:
         return jsonify({'error': 'No code provided'}), 400
 
