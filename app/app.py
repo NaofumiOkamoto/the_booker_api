@@ -175,10 +175,18 @@ def authenticate():
 
 @app.route('/api/check-link-ebay', methods=['GET'])
 def check_link():
-    print('---------')
-    uid = request.args.get('uid')
-    print('uid', uid)
-    return jsonify({'result': 'OK'})
+    try:
+        uid = request.args.get('uid')
+        print('----args.get(uid)-----', uid)
+        ebay_token = EbayToken.query.filter_by(uid='c').first()
+        print('ebay_token record: ', ebay_token)
+        if(ebay_token):
+            return jsonify({'ebay_token': ebay_token.to_dict()})
+
+    except Exception as e:
+        print('エラー: ', e)
+        
+    return jsonify({'result': 'test'})
 
 @app.route("/api/test", methods=["GET"])
 def test():
