@@ -135,37 +135,43 @@ def authenticate():
         print('uid: ', uid)
         if not code:
             return jsonify({'error': 'No code provided'}), 400
-        # eBayのアクセストークンを取得
+
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': f'Basic {base64.b64encode(f"{os.getenv('CLIENT_ID_SAND_BOX')}:{os.getenv('CLIENT_SECRET_SAND_BOX')}".encode()).decode()}'
         }
+
+        # eBayのアクセストークンを取得
+        print('------get token-------')
         token_response = requests.post(EBAY_AUTH_URL_SAND_BOX, data={
                 'code': code,
                 'grant_type': 'authorization_code',
                 'redirect_uri': os.getenv('REDIRECT_URI_SAND_BOX'),
             }, headers=headers
         )
-        print('token_response: ', token_response)
-        print('token_response.access_token: ', token_response.text)
         token_response.raise_for_status()
         ebay_access_token = token_response.json()['access_token']
+        print('token_response: ', token_response)
+        print('token_response.access_token: ', ebay_access_token)
 
         # eBayのユーザー情報を取得
+        print('------get ebay user-------')
         user_response = requests.get('https://apiz.sandbox.ebay.com/commerce/identity/v1/user', headers={
             'Authorization': f'Bearer {ebay_access_token}'
         })
-        print('user_response: ', user_response)
-        print('user_response.text: ', user_response.text)
-
         user_response.raise_for_status()
+        user_response_userId = user_response.json()['userId']
+        print('user_response: ', user_response)
+        print('user_response_userId: ', user_response_userId)
+
         print('user_response: ', user_response)
         ebay_user = user_response.json()
         user_id = ebay_user['userId']
 
-        create_token = dict(**token_response.json(), **{'user_id': user_id}, **{'uid': uid})
-        print('create_token: ', create_token)
-        EbayToken.create_token(create_token)
+        if uid:
+            create_token = dict(**token_response.json(), **{'user_id': user_id}, **{'uid': uid})
+            print('create_token: ', create_token)
+            EbayToken.create_token(create_token)
 
         # Bookerアプリのユーザーを見つけるか作成
 
