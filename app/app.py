@@ -179,7 +179,7 @@ def check_link():
     try:
         uid = request.args.get('uid')
         print('----args.get(uid)-----', uid)
-        ebay_token = EbayToken.query.filter_by(uid='c').first()
+        ebay_token = EbayToken.query.filter_by(uid=uid).first()
         print('ebay_token record: ', ebay_token)
         if(ebay_token):
             return jsonify({'ebay_token': ebay_token.to_dict()})
