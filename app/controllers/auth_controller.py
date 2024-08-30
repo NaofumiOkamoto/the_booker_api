@@ -55,7 +55,7 @@ def authenticate():
         print('token_response: ', token_response)
         print('token_response.access_token: ', ebay_access_token)
 
-        time.sleep(2)
+        time.sleep(3)
         # eBayのユーザー情報を取得
         print('------get ebay user-------')
         user_response = requests.get('https://apiz.sandbox.ebay.com/commerce/identity/v1/user', headers={
@@ -67,10 +67,11 @@ def authenticate():
         print('user_response_userId: ', user_response_userId)
         ebay_user = user_response.json()
         user_id = ebay_user['userId']
+        user_name = ebay_user['username']
 
         # DBにEbayTokenレコード作成
         if uid:
-            create_token = dict(**token_response.json(), **{'user_id': user_id}, **{'uid': uid})
+            create_token = dict(**token_response.json(), **{'user_id': user_id}, **{'user_name': user_name}, **{'uid': uid})
             print('create_token: ', create_token)
             EbayToken.create_token(create_token)
 

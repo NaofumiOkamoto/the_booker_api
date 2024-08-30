@@ -11,6 +11,7 @@ class EbayToken(db.Model):
   id = db.mapped_column(db.Integer, primary_key=True)
   uid = db.mapped_column(db.String(255), nullable=False)
   user_id = db.mapped_column(db.String(255), nullable=False)
+  user_name = db.mapped_column(db.String(255))
   access_token = db.mapped_column(db.Text)
   expires_in = db.mapped_column(db.Integer)
   refresh_token = db.mapped_column(db.Text)
@@ -24,6 +25,7 @@ class EbayToken(db.Model):
       'id': self.id,
       'uid': self.uid,
       'user_id': self.user_id if self.user_id else None,
+      'user_name': self.user_name if self.user_name else None,
       'access_token': self.access_token if self.access_token else None,
       'expires_in': self.expires_in if self.expires_in else None,
       'refresh_token': self.refresh_token if self.refresh_token else None,
@@ -36,6 +38,7 @@ class EbayToken(db.Model):
       try:
           token_object = EbayToken(
               user_id=data["user_id"],
+              user_name=data["user_name"],
               access_token=data["access_token"],
               expires_in=data["expires_in"],
               refresh_token=data["refresh_token"],
