@@ -1,9 +1,10 @@
 import sys
-from flask import Blueprint,redirect,send_file
+from flask import Blueprint,redirect,send_file,jsonify
 # from app.controllers.auth_controller import test, check_link, authenticate
 sys.path.append('../')
 from controllers.auth_controller import *
 from controllers.schedule_controller import *
+from controllers.ebay_controller import *
 
 routes_bp = Blueprint('routes', __name__)
 
@@ -18,6 +19,14 @@ def check_link_route():
 @routes_bp.route('/api/authenticate', methods=['POST'])
 def authenticate_route():
   return authenticate()
+
+@routes_bp.route('/api/search-item', methods=['GET'])
+def search_product_route():
+  return search_item()
+
+@routes_bp.route('/api/add-item', methods=['GET'])
+def add_product_route():
+  return add_item()
 
 @routes_bp.route("/redirect", methods=["GET"])
 def redirect_thebooker_route():
