@@ -19,7 +19,7 @@ def search_item():
       'item': {
         'product_name': item_number,
         'close_time': now_jst_5,
-        'current_price': random.randint(0, 99)
+        'current_price': round(random.uniform(0, 1000), 2)
       }
     })
   ebay_token = EbayToken.query.filter_by(uid=uid).first()

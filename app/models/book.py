@@ -1,6 +1,7 @@
 import json
 from flask import jsonify, abort, request
 from flask_restful import Resource
+from email.utils import parsedate_to_datetime
 from datetime import datetime
 from database import db, init_db
 import zoneinfo
@@ -14,9 +15,8 @@ class Book(db.Model):
   user_id = db.mapped_column(db.String(255), nullable=False)
   item_number = db.mapped_column(db.String(255), nullable=False)
   product_name = db.mapped_column(db.String(255), nullable=False)
-  current_price = db.mapped_column(db.Integer)
-  bid_amount = db.mapped_column(db.Integer)
-  bid_first_amount = db.mapped_column(db.Integer)
+  current_price = db.mapped_column(db.Float)
+  bid_amount = db.mapped_column(db.Float)
   max_amount = db.mapped_column(db.Integer)
   seconds = db.mapped_column(db.Integer)
   is_processed = db.mapped_column(db.Boolean)
@@ -95,9 +95,8 @@ class Bookapi(Resource):
         item_number=book["item_number"],
         product_name=book["product_name"],
         current_price=book["current_price"],
-        bid_first_amount=book["bid_first_amount"],
-        max_amount=book["max_amount"],
-        close_time=book["close_time"],
+        bid_amount=book["bid_amount"],
+        close_time=parsedate_to_datetime(book["close_time"]),
         seconds=book["seconds"],
       )
       print('----book_object----', book_object)
