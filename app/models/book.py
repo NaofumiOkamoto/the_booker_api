@@ -12,9 +12,9 @@ class Book(db.Model):
 
   id = db.mapped_column(db.Integer, primary_key=True)
   user_id = db.mapped_column(db.String(255), nullable=False)
-  platform_name = db.mapped_column(db.String(255), nullable=False)
-  auction_id = db.mapped_column(db.String(255), nullable=False)
+  item_number = db.mapped_column(db.String(255), nullable=False)
   product_name = db.mapped_column(db.String(255), nullable=False)
+  current_price = db.mapped_column(db.Integer)
   bid_amount = db.mapped_column(db.Integer)
   bid_first_amount = db.mapped_column(db.Integer)
   max_amount = db.mapped_column(db.Integer)
@@ -31,14 +31,15 @@ class Book(db.Model):
 # class BookSchema(ma.Schema):
 #   class Meta:
 #     # Fields to expose
-#     fields = ("id", "auction_id", "created_at")
+#     fields = ("id", "item_number", "created_at")
 
 # book_schema = BookSchema(many=True)
   def to_dict(self):
       return {
           'id': self.id,
-          'auction_id': self.auction_id if self.auction_id else None,
+          'item_number': self.item_number if self.item_number else None,
           'product_name': self.product_name if self.product_name else None,
+          'current_price': self.current_price if self.current_price else None,
           'bid_first_amount': self.bid_first_amount if self.bid_first_amount else None,
           'max_amount': self.max_amount if self.max_amount else None,
           'seconds': self.seconds if self.seconds else None,
@@ -68,8 +69,8 @@ class Bookapi(Resource):
 
       books.append({
         'id': record.id,
-        'platform_name': record.platform_name,
-        'auction_id': record.auction_id,
+        'item_number': record.item_number,
+        'current_price': record.current_price,
         'product_name': record.product_name,
         'bid_first_amount': record.bid_first_amount,
         'max_amount': record.max_amount,
@@ -91,9 +92,9 @@ class Bookapi(Resource):
       print('----book----', book)
       book_object = Book(
         user_id=book["user_id"],
-        platform_name=book["platform_name"],
-        auction_id=book["auction_id"],
+        item_number=book["item_number"],
         product_name=book["product_name"],
+        current_price=book["current_price"],
         bid_first_amount=book["bid_first_amount"],
         max_amount=book["max_amount"],
         close_time=book["close_time"],

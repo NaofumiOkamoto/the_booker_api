@@ -71,7 +71,6 @@ class Tokenapi(Resource):
       print('----token----', token)
       token_object = EbayToken(
         user_id=token["user_id"],
-        platform_name=token["token"],
       )
       print('----book_object----', token_object)
       db.session.add(token_object)

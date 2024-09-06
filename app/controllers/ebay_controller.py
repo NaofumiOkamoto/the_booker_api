@@ -1,6 +1,9 @@
 from flask import jsonify, request
 import requests
 import os
+import pytz
+import datetime
+import random
 from models.ebay import EbayToken
 
 def search_item():
@@ -8,14 +11,25 @@ def search_item():
   item_number = request.args.get('item_number')
   uid = request.args.get('uid')
   print('uid', uid)
+
+  now_jst = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+  now_jst_5 = now_jst + datetime.timedelta(days=5)
+  return jsonify(
+    {
+      'item': {
+        'product_name': item_number,
+        'close_time': now_jst_5,
+        'current_price': random.randint(0, 99)
+      }
+    })
   ebay_token = EbayToken.query.filter_by(uid=uid).first()
   token = ebay_token.access_token
   print('token', token)
 
   url = 'https://api.sandbox.ebay.com/buy/browse/v1/item_summary/search'
   params = {
-      'q': 'Test Auction Item',
-      'limit': 3
+    'q': 'Test Auction Item',
+    'limit': 3
   }
   headers = {
       'Authorization': f'Bearer {token}'
