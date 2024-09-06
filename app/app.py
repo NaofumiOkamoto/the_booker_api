@@ -20,8 +20,8 @@ api = Api(app)
 init_db(app)
 CORS(app)
 
-api.add_resource(Bookapi, '/book')
-api.add_resource(Userapi, '/user')
+api.add_resource(Bookapi, '/api/book')
+api.add_resource(Userapi, '/api/user')
 app.register_blueprint(routes_bp)
 
 ##server run
