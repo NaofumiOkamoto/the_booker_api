@@ -6,7 +6,7 @@ from models.ebay import EbayToken
 from flask import jsonify, request
 
 def test():
-  return jsonify({'test': 'OK'})
+    return jsonify({'test': 'OK'})
 
 def check_link():
     try:
@@ -24,9 +24,9 @@ def authenticate():
     # EBAY_AUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token'
     EBAY_AUTH_URL_SAND_BOX = 'https://api.sandbox.ebay.com/identity/v1/oauth2/token'
     print('start authenticate')
-    redirect_uri = os.getenv('REDIRECT_URI_SAND_BOX') if os.getenv('ENV')=='production' else os.getenv('REDIRECT_URI')
-    client_id = os.getenv('CLIENT_ID_SAND_BOX') if os.getenv('ENV')=='production' else os.getenv('CLIENT_ID')
-    client_secret = os.getenv('CLIENT_SECRET_SAND_BOX') if os.getenv('ENV')=='production' else os.getenv('CLIENT_SECRET')
+    redirect_uri = os.getenv('REDIRECT_URI_SAND_BOX') if os.getenv('ENV')!='production' else os.getenv('REDIRECT_URI')
+    client_id = os.getenv('CLIENT_ID_SAND_BOX') if os.getenv('ENV')!='production' else os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET_SAND_BOX') if os.getenv('ENV')!='production' else os.getenv('CLIENT_SECRET')
     print('REDIRECT_URI', redirect_uri)
     print('CLIENT_ID', client_id)
     print('CLIENT_SECRET', client_secret)
