@@ -14,6 +14,7 @@ def search_item():
 
   now_jst = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
   now_jst_5 = now_jst + datetime.timedelta(days=5)
+
   return jsonify(
     {
       'item': {
@@ -26,15 +27,22 @@ def search_item():
   token = ebay_token.access_token
   print('token', token)
 
-  url = 'https://api.sandbox.ebay.com/buy/browse/v1/item_summary/search'
-  params = {
-    'q': 'Test Auction Item',
-    'limit': 3
+  # url = 'https://api.sandbox.ebay.com/buy/browse/v1/item_summary/search'
+  url = 'https://open.api.ebay.com/shopping'
+  body = {
+    'ItemId': item_number
   }
   headers = {
       'Authorization': f'Bearer {token}'
   }
-  response = requests.get(url, headers=headers, params=params)
+  response = requests.post(url, headers=headers, params=params)
+  # 画像 PictureURL (https://i.ebayimg.com/00/s/MTYwMFgxNjAw/z/A9QAAOSwYvlm25gU/$_57.JPG?set_id=880000500F)
+  # 終了時間 EndTime (2024-09-15T15:50:53.000Z)
+  # 送料負担 ShippingCostPaidBy (Seller)
+  # 現在価格 CurrentPrice (61.0) 
+  # ? ConvertedCurrentPrice (61.0)
+  # 商品名　Title　(BIG PUN Capital Punishment LOUD 67512-1 2XLP SEALED j)
+  # ItemID
   print('response:', response.json())
 
   return jsonify({'item': response.json()})

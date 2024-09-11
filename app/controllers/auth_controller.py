@@ -24,12 +24,12 @@ def authenticate():
     # EBAY_AUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token'
     EBAY_AUTH_URL_SAND_BOX = 'https://api.sandbox.ebay.com/identity/v1/oauth2/token'
     print('start authenticate')
-    print('REDIRECT_URI', os.getenv('REDIRECT_URI'))
-    print('CLIENT_ID', os.getenv('CLIENT_ID'))
-    print('CLIENT_SECRET', os.getenv('CLIENT_SECRET'))
-    print('REDIRECT_URI_SAND_BOX', os.getenv('REDIRECT_URI_SAND_BOX'))
-    print('CLIENT_ID_SAND_BOX', os.getenv('CLIENT_ID_SAND_BOX'))
-    print('CLIENT_SECRET_SAND_BOX', os.getenv('CLIENT_SECRET_SAND_BOX'))
+    redirect_uri = os.getenv('REDIRECT_URI_SAND_BOX') if os.getenv('ENV')=='production' else os.getenv('REDIRECT_URI')
+    client_id = os.getenv('CLIENT_ID_SAND_BOX') if os.getenv('ENV')=='production' else os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET_SAND_BOX') if os.getenv('ENV')=='production' else os.getenv('CLIENT_SECRET')
+    print('REDIRECT_URI', redirect_uri)
+    print('CLIENT_ID', client_id)
+    print('CLIENT_SECRET', client_secret)
 
     try:
         code = request.json.get('fullyDecodedStr')
@@ -44,10 +44,10 @@ def authenticate():
         token_response = requests.post(EBAY_AUTH_URL_SAND_BOX, data={
                 'code': code,
                 'grant_type': 'authorization_code',
-                'redirect_uri': os.getenv('REDIRECT_URI_SAND_BOX'),
+                'redirect_uri': redirect_uri,
             }, headers={
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': f'Basic {base64.b64encode(f"{os.getenv('CLIENT_ID_SAND_BOX')}:{os.getenv('CLIENT_SECRET_SAND_BOX')}".encode()).decode()}'
+            'Authorization': f'Basic {base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()}'
         }
         )
         token_response.raise_for_status()
