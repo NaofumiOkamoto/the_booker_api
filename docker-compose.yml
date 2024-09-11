@@ -17,10 +17,10 @@ services:
     container_name: python
     environment:
       FLASK_APP: /app/app.py
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_HOST: db
-      DB_NAME: booker
+      # DB_USER: root
+      # DB_PASSWORD: root
+      # DB_HOST: db
+      # DB_NAME: booker
     ports:
       - "5001:5000"
     volumes: 
@@ -28,29 +28,29 @@ services:
       - ./app:/app
     tty: true             # ターミナル入力を受け付ける
 
-    depends_on:           # seleniumコンテナの後で起動させるように指定
-      - db
+    # depends_on:           # seleniumコンテナの後で起動させるように指定
+    #   - db
     # command: flask run --host=0.0.0.0 --port=5000
     command: python app.py
     networks:
       - app-net
 
-  db:
-    image: mysql:8.4
-    container_name: db
-    platform: linux/x86_64  # M1 Macの場合必要
-    environment:
-      MYSQL_DATABASE: 'booker' 
-      MYSQL_ROOT_PASSWORD: root
-      TZ: 'Asia/Tokyo'  # タイムゾーンを日本時間に設定
-    volumes:
-      - mysql_data:/var/lib/mysql
-    # command: --default-authentication-plugin=mysql_native_password  # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
-    command: --mysql_native_password=ON  # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
-    ports:
-      - 3306:3306  # ホストマシンのポート33306を、docker内のポート3306に接続する
-    networks:
-      - app-net
+  # db:
+  #   image: mysql:8.4
+  #   container_name: db
+  #   platform: linux/x86_64  # M1 Macの場合必要
+  #   environment:
+  #     MYSQL_DATABASE: 'booker' 
+  #     MYSQL_ROOT_PASSWORD: root
+  #     TZ: 'Asia/Tokyo'  # タイムゾーンを日本時間に設定
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   # command: --default-authentication-plugin=mysql_native_password  # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
+  #   command: --mysql_native_password=ON  # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
+  #   ports:
+  #     - 3306:3306  # ホストマシンのポート33306を、docker内のポート3306に接続する
+  #   networks:
+  #     - app-net
   
   # celery:
   #   build: ./py_context
@@ -99,8 +99,8 @@ services:
   #   networks:
   #     - app-net
 
-volumes:
-  mysql_data:
+# volumes:
+#   mysql_data:
 
 networks:
   app-net:
