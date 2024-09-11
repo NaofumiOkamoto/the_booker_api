@@ -21,15 +21,15 @@ def check_link():
     return jsonify({'result': 'test'})
 
 def authenticate():
-    # EBAY_AUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token'
-    EBAY_AUTH_URL_SAND_BOX = 'https://api.sandbox.ebay.com/identity/v1/oauth2/token'
     print('start authenticate')
+    EBAY_AUTH_URL = os.getenv('EBAY_AUTH_URL_SAND_BOX') if os.getenv('ENV')!='production' else os.getenv('EBAY_AUTH_URL')
     redirect_uri = os.getenv('REDIRECT_URI_SAND_BOX') if os.getenv('ENV')!='production' else os.getenv('REDIRECT_URI')
     client_id = os.getenv('CLIENT_ID_SAND_BOX') if os.getenv('ENV')!='production' else os.getenv('CLIENT_ID')
     client_secret = os.getenv('CLIENT_SECRET_SAND_BOX') if os.getenv('ENV')!='production' else os.getenv('CLIENT_SECRET')
     print('REDIRECT_URI', redirect_uri)
     print('CLIENT_ID', client_id)
     print('CLIENT_SECRET', client_secret)
+    print('EBAY_AUTH_URL', EBAY_AUTH_URL)
 
     try:
         code = request.json.get('fullyDecodedStr')
@@ -41,7 +41,7 @@ def authenticate():
 
         # eBayのアクセストークンを取得
         print('------get token-------')
-        token_response = requests.post(EBAY_AUTH_URL_SAND_BOX, data={
+        token_response = requests.post(EBAY_AUTH_URL, data={
                 'code': code,
                 'grant_type': 'authorization_code',
                 'redirect_uri': redirect_uri,
