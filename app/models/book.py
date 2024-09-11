@@ -54,8 +54,7 @@ class Book(db.Model):
 class Bookapi(Resource):
   def get(self):
     # userの取得
-    user_id = request.args.get('user_id')
-    print(user_id)
+    user_id = request.args.get('uid')
     result = Book.query.filter_by(user_id=user_id).order_by(Book.created_at.desc()).all()
 
     books = []
@@ -72,8 +71,7 @@ class Bookapi(Resource):
         'item_number': record.item_number,
         'current_price': record.current_price,
         'product_name': record.product_name,
-        'bid_first_amount': record.bid_first_amount,
-        'max_amount': record.max_amount,
+        'bid_amount': record.bid_amount,
         'seconds': record.seconds,
         'bid_time': jst_bid_time,
         'close_time': jst_close_time,
