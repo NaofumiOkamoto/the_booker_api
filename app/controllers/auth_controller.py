@@ -22,11 +22,11 @@ def check_link():
 
 def authenticate():
     print('start authenticate')
-    ENV = os.getenv('ENV')
-    EBAY_AUTH_URL = os.getenv('EBAY_AUTH_URL_SAND_BOX') if ENV!='production' else os.getenv('EBAY_AUTH_URL')
-    redirect_uri = os.getenv('REDIRECT_URI_SAND_BOX') if ENV!='production' else os.getenv('REDIRECT_URI')
-    client_id = os.getenv('CLIENT_ID_SAND_BOX') if ENV!='production' else os.getenv('CLIENT_ID')
-    client_secret = os.getenv('CLIENT_SECRET_SAND_BOX') if ENV!='production' else os.getenv('CLIENT_SECRET')
+    EBAY_ENV = os.getenv('EBAY_ENV')
+    EBAY_AUTH_URL = os.getenv('EBAY_AUTH_URL_SAND_BOX') if EBAY_ENV!='production' else os.getenv('EBAY_AUTH_URL')
+    redirect_uri = os.getenv('REDIRECT_URI_SAND_BOX') if EBAY_ENV!='production' else os.getenv('REDIRECT_URI')
+    client_id = os.getenv('CLIENT_ID_SAND_BOX') if EBAY_ENV!='production' else os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET_SAND_BOX') if EBAY_ENV!='production' else os.getenv('CLIENT_SECRET')
     print('REDIRECT_URI', redirect_uri)
     print('CLIENT_ID', client_id)
     print('CLIENT_SECRET', client_secret)
@@ -59,7 +59,7 @@ def authenticate():
         time.sleep(3)
         # eBayのユーザー情報を取得
         print('------get ebay user-------')
-        url = 'https://apiz.ebay.com/commerce/identity/v1/user' if ENV=='production' else 'https://apiz.sandbox.ebay.com/commerce/identity/v1/user'
+        url = 'https://apiz.ebay.com/commerce/identity/v1/user' if EBAY_ENV=='production' else 'https://apiz.sandbox.ebay.com/commerce/identity/v1/user'
         user_response = requests.get(url, headers={
             'Authorization': f'Bearer {ebay_access_token}'
         })
