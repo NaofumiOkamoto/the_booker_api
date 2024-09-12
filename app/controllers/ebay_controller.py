@@ -2,10 +2,52 @@ from flask import jsonify, request
 import requests
 import os
 import pytz
-import datetime
+from datetime import datetime, timedelta
 import random
 from models.ebay import EbayToken
 import xml.etree.ElementTree as ET
+from typing import Optional
+import base64
+
+def get_ebay_token(uid):
+  ebay_token = EbayToken.query.filter_by(uid=uid).first()
+  token = ebay_token.access_token
+  refresh_token = ebay_token.refresh_token
+  updated_at = ebay_token.updated_at
+  token_acquired_time = updated_at
+  CLIENT_ID = os.getenv('CLIENT_ID')
+  CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+
+  # 7200秒後の時間を計算
+  token_expiration_time = token_acquired_time + timedelta(seconds=7200)
+  current_time = datetime.now()
+
+  # アクセストークンが期限切れかどうかを確認
+  if token_expiration_time < current_time:
+      print("アクセストークンが期限切れです。リフレッシュトークンを使用して新しいアクセストークンを取得します。")
+      # リフレッシュトークンを使用して新しいアクセストークンを取得
+      headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': f'Basic {base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()}'# Base64エンコードが必要です
+      }
+      data = {
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token,
+        'scope': 'https://api.ebay.com/oauth/api_scope'
+      }
+      response = requests.post('https://api.ebay.com/identity/v1/oauth2/token', headers=headers, data=data)
+
+      if response.status_code == 200:
+          new_access_token = response.json()['access_token']
+          expires_in = response.json()['expires_in']
+          print(f"有効期限（秒）: {expires_in}")
+          return new_access_token
+      else:
+          print(f"アクセストークンの再取得に失敗しました。エラー: {response.text}")
+  else:
+      print("アクセストークンはまだ有効です。")
+      return token
+
 
 def search_item():
   print('search-product 処理開始')
@@ -13,9 +55,8 @@ def search_item():
   uid = request.args.get('uid')
   print('item_number', item_number)
 
-  ebay_token = EbayToken.query.filter_by(uid=uid).first()
-  token = ebay_token.access_token
-  # print('token', token)
+  token = get_ebay_token(uid)
+  # print('#### token ####', token)
 
   url = f'https://api.ebay.com/buy/browse/v1/item/v1|{item_number}|0'
   headers = {
@@ -23,14 +64,24 @@ def search_item():
     "Content-Type": "application/json"
   }
   response = requests.get(url, headers=headers)
+  # print(response.text)
   result = response.json()
 
-  item_id = result['itemId']
+  if (result.get('errors')):
+    print(result.get('errors'))
+    return jsonify({ 'item': None })
+
+  # item_id = result['itemId']
+  current_price = 0
+  currency = 'USD'
   title = result['title']
-  current_price = result['currentBidPrice']['value']
-  currency = result['currentBidPrice']['currency']
+  currentBidPrice = result.get('currentBidPrice')
+  print('currentBidPrice', currentBidPrice)
+  if currentBidPrice != None:
+    current_price = currentBidPrice.get('value')
+    currency = currentBidPrice.get('currency')
   image_url = result['itemId']
-  end_time = result['itemEndDate']
+  end_time = result.get('itemEndDate')
   shipping_cost = result['shippingOptions'][0]['shippingCost']
   image_url = result['image']['imageUrl']
 
