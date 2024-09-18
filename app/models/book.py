@@ -16,6 +16,8 @@ class Book(db.Model):
   item_number = db.mapped_column(db.String(255), nullable=False)
   product_name = db.mapped_column(db.String(255), nullable=False)
   current_price = db.mapped_column(db.Float)
+  shipping_cost = db.mapped_column(db.Float)
+  image_url = db.mapped_column(db.String(255))
   bid_amount = db.mapped_column(db.Float)
   max_amount = db.mapped_column(db.Integer)
   seconds = db.mapped_column(db.Integer)
@@ -40,6 +42,8 @@ class Book(db.Model):
           'item_number': self.item_number if self.item_number else None,
           'product_name': self.product_name if self.product_name else None,
           'current_price': self.current_price if self.current_price else None,
+          'shipping_cost': self.shipping_cost if self.shipping_cost else None,
+          'image_url': self.image_url if self.image_url else None,
           'bid_first_amount': self.bid_first_amount if self.bid_first_amount else None,
           'max_amount': self.max_amount if self.max_amount else None,
           'seconds': self.seconds if self.seconds else None,
@@ -70,6 +74,8 @@ class Bookapi(Resource):
         'id': record.id,
         'item_number': record.item_number,
         'current_price': record.current_price,
+        'shipping_cost': record.shipping_cost,
+        'image_url': record.image_url,
         'product_name': record.product_name,
         'bid_amount': record.bid_amount,
         'seconds': record.seconds,
@@ -84,7 +90,6 @@ class Bookapi(Resource):
   def post(self):
     # 作成
     try:
-
       print('----post request.json----', request.json)
       book = request.json["book"]
       print('----book----', book)
@@ -94,6 +99,8 @@ class Bookapi(Resource):
         item_number=book["item_number"],
         product_name=book["title"],
         current_price=book["current_price"],
+        shipping_cost=book["shipping_cost"],
+        image_url=book["image_url"],
         bid_amount=book["bid_amount"],
         close_time=date_obj.strftime("%Y-%m-%d %H:%M:%S"),
         seconds=book["seconds"],
@@ -104,3 +111,32 @@ class Bookapi(Resource):
       return '', 204
     except Exception as e:
       print('予約作成エラ〜', e)
+
+  def put(self, id):
+    print('put入った')
+    try:
+      book = Book.query.get_or_404(id)
+      data = request.get_json()
+
+      if 'id' in data:
+          book.id = data['id']
+      if 'bid_amount' in data:
+          book.bid_amount = data['bid_amount']
+      if 'seconds' in data:
+          book.seconds = data['seconds']
+
+      db.session.commit()
+      return 'update successfully', 200
+    except Exception as e:
+      print('予約更新エラ〜', e)
+      return 'update rejected', 400
+
+  def delete(self, id):
+    try:
+      book = Book.query.get_or_404(id)
+      db.session.delete(book)
+      db.session.commit()
+      return 'delete successfully', 200
+    except Exception as e:
+      print('予約削除エラ〜', e)
+      return 'delete rejected', 400
