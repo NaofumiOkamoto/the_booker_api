@@ -1,13 +1,10 @@
 from flask import jsonify, request
 import requests
 import os
-import pytz
 from datetime import datetime, timedelta
-import random
 from models.ebay import EbayToken
-import xml.etree.ElementTree as ET
-from typing import Optional
 import base64
+from models.book import Book
 
 def get_ebay_token(uid):
   ebay_token = EbayToken.query.filter_by(uid=uid).first()
@@ -55,9 +52,12 @@ def search_item():
   uid = request.args.get('uid')
   print('item_number', item_number)
 
-  token = get_ebay_token(uid)
-  # print('#### token ####', token)
+  # すでに予約済みかを確認
+  item = Book.query.filter_by(user_id=uid, item_number=item_number).first()
+  if item != None:
+    return jsonify({ 'item': 'duplicate' })
 
+  token = get_ebay_token(uid)
   url = f'https://api.ebay.com/buy/browse/v1/item/v1|{item_number}|0'
   headers = {
     "Authorization": f'Bearer {token}',  # Replace with your actual access token
@@ -66,7 +66,6 @@ def search_item():
     # 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US'  # 英語のマーケットプレイス（US）
   }
   response = requests.get(url, headers=headers)
-  # print(response.text)
   result = response.json()
 
   if (result.get('errors')):

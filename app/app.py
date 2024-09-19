@@ -4,8 +4,8 @@ from flask import Flask,request,jsonify,send_file,redirect
 from database import init_db
 from flask_restful import Api
 from flask_marshmallow import Marshmallow
-from models.book import Book, Bookapi
-from models.user import User, Userapi
+from models.book import Bookapi
+from models.user import Userapi
 from test_scraping import hoge
 from flask_cors import CORS
 from routes.routes import routes_bp
