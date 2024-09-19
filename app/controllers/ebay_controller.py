@@ -62,8 +62,8 @@ def search_item():
   headers = {
     "Authorization": f'Bearer {token}',  # Replace with your actual access token
     "Content-Type": "application/json",
-    "X-EBAY-C-ENDUSERCTX": "contextualLocation=country=JP,zip=",
-    'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US'  # 英語のマーケットプレイス（US）
+    # "X-EBAY-C-ENDUSERCTX": "contextualLocation=country=JP,zip=",
+    # 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US'  # 英語のマーケットプレイス（US）
   }
   response = requests.get(url, headers=headers)
   # print(response.text)
@@ -77,28 +77,26 @@ def search_item():
   current_price = 0
   current_price_jp = 0
   currency = 'USD'
+  shipping_cost = 0
   title = result['title']
   currentBidPrice = result.get('currentBidPrice')
   if currentBidPrice != None:
-    current_price = currentBidPrice.get('convertedFromValue')
-    current_price_jp = currentBidPrice.get('value')
+    # current_price = currentBidPrice.get('convertedFromValue')
+    current_price = currentBidPrice.get('value')
     currency = currentBidPrice.get('currency')
   image_url = result['itemId']
   end_time = result.get('itemEndDate')
-  shipping_cost = result['shippingOptions'][0]['shippingCost']['convertedFromValue']
-  shipping_cost_jp = result['shippingOptions'][0]['shippingCost']['value']
-  print('shipping_cost.length', len(result['shippingOptions']))
-  print('shipping_cost', result['shippingOptions'])
+  shippingOptions = result.get('shippingOptions')
+  if shippingOptions != None:
+    shipping_cost = shippingOptions[0]['shippingCost']['value']
   image_url = result['image']['imageUrl']
 
   return jsonify({ 'item': {
       'title': title,
       'end_time': end_time,
       'current_price': current_price,
-      'current_price_jp': current_price_jp,
       'currency': currency,
       'shipping_cost': shipping_cost,
-      'shipping_cost_jp': shipping_cost_jp,
       'image_url': image_url,
     }
   })
