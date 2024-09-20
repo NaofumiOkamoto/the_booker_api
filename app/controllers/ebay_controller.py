@@ -22,6 +22,9 @@ def get_ebay_token(uid):
   token_expiration_time = token_acquired_time + timedelta(seconds=7000)
   token_expiration_time_jst = token_expiration_time.astimezone(japan_tz)
   current_time = datetime.now(pytz.timezone('Asia/Tokyo'))
+  print('token_acquired_time', token_acquired_time)
+  print('token_expiration_time_jst', token_expiration_time_jst)
+  print('current_time', current_time)
 
   # アクセストークンが期限切れかどうかを確認
   if token_expiration_time_jst < current_time:
