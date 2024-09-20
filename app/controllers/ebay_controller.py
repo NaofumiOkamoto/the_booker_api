@@ -6,6 +6,7 @@ from models.ebay import EbayToken
 import base64
 from models.book import Book
 import xml.etree.ElementTree as ET
+import pytz
 
 def get_ebay_token(uid):
   ebay_token = EbayToken.query.filter_by(uid=uid).first()
@@ -17,11 +18,13 @@ def get_ebay_token(uid):
   CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
   # 7200秒後の時間を計算
-  token_expiration_time = token_acquired_time + timedelta(seconds=7200)
-  current_time = datetime.now()
+  japan_tz = pytz.timezone('Asia/Tokyo')
+  token_expiration_time = token_acquired_time + timedelta(seconds=7000)
+  token_expiration_time_jst = token_expiration_time.astimezone(japan_tz)
+  current_time = datetime.now(pytz.timezone('Asia/Tokyo'))
 
   # アクセストークンが期限切れかどうかを確認
-  if token_expiration_time < current_time:
+  if token_expiration_time_jst < current_time:
       print("アクセストークンが期限切れです。リフレッシュトークンを使用して新しいアクセストークンを取得します。")
       # リフレッシュトークンを使用して新しいアクセストークンを取得
       headers = {
@@ -132,6 +135,10 @@ def get_watch_list():
     ns = {'ns': 'urn:ebay:apis:eBLBaseComponents'}
 
     ack = root.find('.//ns:Ack', ns).text
+    if (ack != 'Success'):
+      print('見つからず')
+      print(response.text)
+      return jsonify({'item': None})
     items = []
     # ItemArray内のItem情報を抽出
     # print(response.text)
