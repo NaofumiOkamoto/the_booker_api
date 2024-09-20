@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from models.ebay import EbayToken
 import base64
 from models.book import Book
+import xml.etree.ElementTree as ET
 
 def get_ebay_token(uid):
   ebay_token = EbayToken.query.filter_by(uid=uid).first()
@@ -99,6 +100,58 @@ def search_item():
       'image_url': image_url,
     }
   })
+
+def get_watch_list():
+    print('get watch list')
+    uid = request.args.get('uid')
+    token = get_ebay_token(uid)
+
+    EBAY_API_URL = "https://api.ebay.com/ws/api.dll"
+    HEADERS = {
+      'X-EBAY-API-CALL-NAME': 'GetMyeBayBuying',
+      'X-EBAY-API-SITEID': '0',  # 0 = US site
+      'X-EBAY-API-COMPATIBILITY-LEVEL': '967',  # APIのバージョン
+      'X-EBAY-API-IAF-TOKEN': token,
+      'Content-Type': 'text/xml'
+    }
+    body = f"""<?xml version="1.0" encoding="utf-8"?>
+    <GetMyeBayBuyingRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+      <RequesterCredentials>
+        <eBayAuthToken>{token}</eBayAuthToken>
+      </RequesterCredentials>
+      <WatchList>
+        <Include>true</Include>
+      </WatchList>
+    </GetMyeBayBuyingRequest>"""
+
+    response = requests.post(EBAY_API_URL, headers=HEADERS, data=body)
+
+    # XMLをJSON形式に変換
+    root = ET.fromstring(response.text)
+    # eBayのネームスペース
+    ns = {'ns': 'urn:ebay:apis:eBLBaseComponents'}
+
+    ack = root.find('.//ns:Ack', ns).text
+    items = []
+    # ItemArray内のItem情報を抽出
+    # print(response.text)
+    for item in root.findall('.//ns:Item', ns):
+      item_info = {
+        'item_number': item.find('ns:ItemID', ns).text,
+        'title': item.find('ns:Title', ns).text,
+        'StartTime': item.find('.//ns:StartTime', ns).text,
+        'end_time': item.find('.//ns:EndTime', ns).text,
+        'ViewItemURL': item.find('.//ns:ViewItemURL', ns).text,
+        'shipping_cost': item.find('.//ns:ShippingServiceCost', ns).text,
+        'current_price': item.find('.//ns:ConvertedCurrentPrice', ns).text if 
+          item.find('.//ns:ConvertedCurrentPrice', ns) is not None else item.find('.//ns:StartPrice', ns).text,
+        'image_url': item.find('.//ns:GalleryURL', ns).text
+      }
+      items.append(item_info)
+
+    return jsonify({
+       'watchlist': items
+    })
 
 # def search_single_item():
 #   print('search-product 処理開始')

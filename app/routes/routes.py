@@ -24,9 +24,13 @@ def authenticate_route():
 def search_product_route():
   return search_item()
 
-@routes_bp.route('/api/add-item', methods=['GET'])
-def add_product_route():
-  return add_item()
+@routes_bp.route('/api/get-watchlist', methods=['GET'])
+def get_watch_list_route():
+  return get_watch_list()
+
+# @routes_bp.route('/api/add-item', methods=['GET'])
+# def add_product_route():
+#   return add_item()
 
 @routes_bp.route("/redirect", methods=["GET"])
 def redirect_thebooker_route():
