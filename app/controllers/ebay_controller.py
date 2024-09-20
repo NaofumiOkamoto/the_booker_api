@@ -7,27 +7,25 @@ import base64
 from models.book import Book
 import xml.etree.ElementTree as ET
 import pytz
+from database import db
+from dateutil import parser
 
 def get_ebay_token(uid):
   ebay_token = EbayToken.query.filter_by(uid=uid).first()
   token = ebay_token.access_token
   refresh_token = ebay_token.refresh_token
-  updated_at = ebay_token.updated_at
-  token_acquired_time = updated_at
   CLIENT_ID = os.getenv('CLIENT_ID')
   CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
-  # 7200秒後の時間を計算
+  expiration_time = ebay_token.updated_at + timedelta(seconds=7000)
+  token_expiration_time = expiration_time.replace(tzinfo=None)
   japan_tz = pytz.timezone('Asia/Tokyo')
-  token_expiration_time = token_acquired_time + timedelta(seconds=7000)
-  token_expiration_time_jst = token_expiration_time.astimezone(japan_tz)
-  current_time = datetime.now(pytz.timezone('Asia/Tokyo'))
-  print('token_acquired_time', token_acquired_time)
-  print('token_expiration_time_jst', token_expiration_time_jst)
+  current_time = datetime.now(japan_tz).replace(tzinfo=None)
+  print('token_expiration_time', token_expiration_time)
   print('current_time', current_time)
 
   # アクセストークンが期限切れかどうかを確認
-  if token_expiration_time_jst < current_time:
+  if token_expiration_time < current_time:
       print("アクセストークンが期限切れです。リフレッシュトークンを使用して新しいアクセストークンを取得します。")
       # リフレッシュトークンを使用して新しいアクセストークンを取得
       headers = {
@@ -45,6 +43,11 @@ def get_ebay_token(uid):
           new_access_token = response.json()['access_token']
           expires_in = response.json()['expires_in']
           print(f"有効期限（秒）: {expires_in}")
+
+          # DBのアクセストークンを更新
+          ebay_token.access_token = new_access_token
+          ebay_token.updated_at = current_time
+          db.session.commit()
           return new_access_token
       else:
           print(f"アクセストークンの再取得に失敗しました。エラー: {response.text}")
