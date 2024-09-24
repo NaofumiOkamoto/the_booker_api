@@ -155,7 +155,8 @@ def get_watch_list():
         'StartTime': item.find('.//ns:StartTime', ns).text,
         'end_time': item.find('.//ns:EndTime', ns).text,
         'ViewItemURL': item.find('.//ns:ViewItemURL', ns).text,
-        'shipping_cost': item.find('.//ns:ShippingServiceCost', ns).text,
+        'shipping_cost': item.find('.//ns:ShippingServiceCost', ns).text if 
+          item.find('.//ns:ShippingServiceCost', ns) is not None else 0,
         'current_price': item.find('.//ns:ConvertedCurrentPrice', ns).text if 
           item.find('.//ns:ConvertedCurrentPrice', ns) is not None else item.find('.//ns:StartPrice', ns).text,
         'image_url': item.find('.//ns:GalleryURL', ns).text
