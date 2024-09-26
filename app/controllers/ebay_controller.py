@@ -94,7 +94,7 @@ def search_item():
     current_price = currentBidPrice.get('value')
     currency = currentBidPrice.get('currency')
   image_url = result['itemId']
-  end_time = result.get('itemEndDate')
+  end_time = result.get('itemEndDate') # APIでは 2024-10-01T13:31:02.000Zのように世界時間で取得される
   shippingOptions = result.get('shippingOptions')
   if shippingOptions != None:
     shipping_cost = shippingOptions[0]['shippingCost']['value']

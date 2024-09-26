@@ -93,7 +93,7 @@ class Bookapi(Resource):
       print('----post request.json----', request.json)
       book = request.json["book"]
       print('----book----', book)
-      date_obj = datetime.strptime(book["end_time"], "%Y-%m-%dT%H:%M:%S.%fZ")
+      # date_obj = datetime.strptime(book["end_time"], "%Y-%m-%dT%H:%M:%S.%fZ")
       book_object = Book(
         user_id=book["user_id"],
         item_number=book["item_number"],
@@ -102,7 +102,8 @@ class Bookapi(Resource):
         shipping_cost=book["shipping_cost"],
         image_url=book["image_url"],
         bid_amount=book["bid_amount"],
-        close_time=date_obj.strftime("%Y-%m-%d %H:%M:%S"),
+        # close_time=date_obj.strftime("%Y-%m-%d %H:%M:%S"),
+        close_time=book["end_time"],
         seconds=book["seconds"],
       )
       print('----book_object----', book_object)
