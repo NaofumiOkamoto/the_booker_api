@@ -60,7 +60,8 @@ def search_item():
   print('search-product 処理開始')
   item_number = request.args.get('item_number')
   uid = request.args.get('uid')
-  print('item_number', item_number)
+  ship_to = request.args.get('ship_to')
+  print(ship_to)
 
   # すでに予約済みかを確認
   item = Book.query.filter_by(user_id=uid, item_number=item_number).first()
@@ -72,7 +73,7 @@ def search_item():
   headers = {
     "Authorization": f'Bearer {token}',  # Replace with your actual access token
     "Content-Type": "application/json",
-    # "X-EBAY-C-ENDUSERCTX": "contextualLocation=country=JP,zip=",
+    "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={ship_to},zip=",
     # 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US'  # 英語のマーケットプレイス（US）
   }
   response = requests.get(url, headers=headers)
@@ -87,6 +88,8 @@ def search_item():
   current_price_jp = 0
   currency = 'USD'
   shipping_cost = 0
+  shippingOptions = None
+  print(result)
   title = result['title']
   currentBidPrice = result.get('currentBidPrice')
   if currentBidPrice != None:
@@ -96,6 +99,8 @@ def search_item():
   image_url = result['itemId']
   end_time = result.get('itemEndDate') # APIでは 2024-10-01T13:31:02.000Zのように世界時間で取得される
   shippingOptions = result.get('shippingOptions')
+  # 日本へ配送されない場合があります。配送方法については、商品説明を読むか、出品者にお問い合わせください
+  # ↑の時は shippingOptions がないっぽい
   if shippingOptions != None:
     shipping_cost = shippingOptions[0]['shippingCost']['value']
   image_url = result['image']['imageUrl']
@@ -107,6 +112,7 @@ def search_item():
       'currency': currency,
       'shipping_cost': shipping_cost,
       'image_url': image_url,
+      'shippingOptions': shippingOptions,
     }
   })
 
@@ -149,6 +155,7 @@ def get_watch_list():
     # ItemArray内のItem情報を抽出
     # print(response.text)
     for item in root.findall('.//ns:Item', ns):
+      print('itemId: ', item.find('ns:ItemID', ns).text)
       item_info = {
         'item_number': item.find('ns:ItemID', ns).text,
         'title': item.find('ns:Title', ns).text,
@@ -157,6 +164,9 @@ def get_watch_list():
         'ViewItemURL': item.find('.//ns:ViewItemURL', ns).text,
         'shipping_cost': item.find('.//ns:ShippingServiceCost', ns).text if 
           item.find('.//ns:ShippingServiceCost', ns) is not None else 0,
+          #     item.find('.//ns:ConvertedCurrentPrice', ns) is not None else item.find('.//ns:StartPrice', ns).text,
+                                                                  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          # AttributeError: 'NoneType' object has no attribute 'text'
         'current_price': item.find('.//ns:ConvertedCurrentPrice', ns).text if 
           item.find('.//ns:ConvertedCurrentPrice', ns) is not None else item.find('.//ns:StartPrice', ns).text,
         'image_url': item.find('.//ns:GalleryURL', ns).text
