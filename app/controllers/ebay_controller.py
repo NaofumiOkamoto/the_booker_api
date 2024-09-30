@@ -156,6 +156,9 @@ def get_watch_list():
     # print(response.text)
     for item in root.findall('.//ns:Item', ns):
       print('itemId: ', item.find('ns:ItemID', ns).text)
+      print('ListingType: ', item.find('ns:ListingType', ns).text)
+      if item.find('ns:ListingType', ns).text != 'Auction':
+        continue
       item_info = {
         'item_number': item.find('ns:ItemID', ns).text,
         'title': item.find('ns:Title', ns).text,
