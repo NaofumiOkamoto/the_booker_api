@@ -121,6 +121,7 @@ def get_watch_list():
     uid = request.args.get('uid')
     token = get_ebay_token(uid)
 
+    # Trading API の GetMyEbayBuying
     EBAY_API_URL = "https://api.ebay.com/ws/api.dll"
     HEADERS = {
       'X-EBAY-API-CALL-NAME': 'GetMyeBayBuying',
@@ -157,6 +158,10 @@ def get_watch_list():
     for item in root.findall('.//ns:Item', ns):
       print('itemId: ', item.find('ns:ItemID', ns).text)
       print('ListingType: ', item.find('ns:ListingType', ns).text)
+      end_time = parser.parse(item.find('.//ns:EndTime', ns).text).replace(tzinfo=None)
+      now = datetime.now().replace(tzinfo=None)
+      if end_time < now:
+        continue
       if item.find('ns:ListingType', ns).text != 'Auction':
         continue
       item_info = {
