@@ -95,10 +95,10 @@ def search_item():
   if currentBidPrice == None:
     return jsonify({ 'item': 'not_auction' })
     # current_price = currentBidPrice.get('convertedFromValue')
+  end_time = result.get('itemEndDate') # APIでは 2024-10-01T13:31:02.000Zのように世界時間で取得される
   current_price = currentBidPrice.get('value')
   currency = currentBidPrice.get('currency')
   image_url = result['itemId']
-  end_time = result.get('itemEndDate') # APIでは 2024-10-01T13:31:02.000Zのように世界時間で取得される
   shippingOptions = result.get('shippingOptions')
   # 日本へ配送されない場合があります。配送方法については、商品説明を読むか、出品者にお問い合わせください
   # ↑の時は shippingOptions がないっぽい
@@ -138,7 +138,15 @@ def get_watch_list():
       </RequesterCredentials>
       <WatchList>
         <Include>true</Include>
+        <Pagination>
+          <EntriesPerPage>200</EntriesPerPage>
+          <PageNumber>1</PageNumber>
+        </Pagination>
       </WatchList>
+      <Pagination>
+        <EntriesPerPage>200</EntriesPerPage>
+        <PageNumber>1</PageNumber>
+      </Pagination>
     </GetMyeBayBuyingRequest>"""
 
     try:
