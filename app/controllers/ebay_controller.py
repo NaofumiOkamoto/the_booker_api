@@ -92,10 +92,11 @@ def search_item():
   print(result)
   title = result['title']
   currentBidPrice = result.get('currentBidPrice')
-  if currentBidPrice != None:
+  if currentBidPrice == None:
+    return jsonify({ 'item': 'not_auction' })
     # current_price = currentBidPrice.get('convertedFromValue')
-    current_price = currentBidPrice.get('value')
-    currency = currentBidPrice.get('currency')
+  current_price = currentBidPrice.get('value')
+  currency = currentBidPrice.get('currency')
   image_url = result['itemId']
   end_time = result.get('itemEndDate') # APIでは 2024-10-01T13:31:02.000Zのように世界時間で取得される
   shippingOptions = result.get('shippingOptions')
@@ -140,50 +141,53 @@ def get_watch_list():
       </WatchList>
     </GetMyeBayBuyingRequest>"""
 
-    response = requests.post(EBAY_API_URL, headers=HEADERS, data=body)
+    try:
+      response = requests.post(EBAY_API_URL, headers=HEADERS, data=body)
 
-    # XMLをJSON形式に変換
-    root = ET.fromstring(response.text)
-    # eBayのネームスペース
-    ns = {'ns': 'urn:ebay:apis:eBLBaseComponents'}
+      # XMLをJSON形式に変換
+      root = ET.fromstring(response.text)
+      # eBayのネームスペース
+      ns = {'ns': 'urn:ebay:apis:eBLBaseComponents'}
 
-    ack = root.find('.//ns:Ack', ns).text
-    if (ack != 'Success'):
-      print('見つからず')
-      print(response.text)
-      return jsonify({'item': None})
-    items = []
-    # ItemArray内のItem情報を抽出
-    # print(response.text)
-    for item in root.findall('.//ns:Item', ns):
-      print('itemId: ', item.find('ns:ItemID', ns).text)
-      print('ListingType: ', item.find('ns:ListingType', ns).text)
-      end_time = parser.parse(item.find('.//ns:EndTime', ns).text).replace(tzinfo=None)
-      now = datetime.now().replace(tzinfo=None)
-      if end_time < now:
-        continue
-      if item.find('ns:ListingType', ns).text != 'Auction':
-        continue
-      item_info = {
-        'item_number': item.find('ns:ItemID', ns).text,
-        'title': item.find('ns:Title', ns).text,
-        'StartTime': item.find('.//ns:StartTime', ns).text,
-        'end_time': item.find('.//ns:EndTime', ns).text,
-        'ViewItemURL': item.find('.//ns:ViewItemURL', ns).text,
-        'shipping_cost': item.find('.//ns:ShippingServiceCost', ns).text if 
-          item.find('.//ns:ShippingServiceCost', ns) is not None else 0,
-          #     item.find('.//ns:ConvertedCurrentPrice', ns) is not None else item.find('.//ns:StartPrice', ns).text,
-                                                                  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-          # AttributeError: 'NoneType' object has no attribute 'text'
-        'current_price': item.find('.//ns:ConvertedCurrentPrice', ns).text if 
-          item.find('.//ns:ConvertedCurrentPrice', ns) is not None else item.find('.//ns:StartPrice', ns).text,
-        'image_url': item.find('.//ns:GalleryURL', ns).text
-      }
-      items.append(item_info)
+      ack = root.find('.//ns:Ack', ns).text
+      if (ack != 'Success'):
+        print('見つからず')
+        print(response.text)
+        return jsonify({'item': None})
+      items = []
+      # ItemArray内のItem情報を抽出
+      # print(response.text)
+      for item in root.findall('.//ns:Item', ns):
+        print('itemId: ', item.find('ns:ItemID', ns).text)
+        print('ListingType: ', item.find('ns:ListingType', ns).text)
+        end_time = parser.parse(item.find('.//ns:EndTime', ns).text).replace(tzinfo=None)
+        now = datetime.now().replace(tzinfo=None)
+        if end_time < now:
+          continue
+        if item.find('ns:ListingType', ns).text != 'Auction':
+          continue
+        item_info = {
+          'item_number': item.find('ns:ItemID', ns).text,
+          'title': item.find('ns:Title', ns).text,
+          'StartTime': item.find('.//ns:StartTime', ns).text,
+          'end_time': item.find('.//ns:EndTime', ns).text,
+          'ViewItemURL': item.find('.//ns:ViewItemURL', ns).text,
+          'shipping_cost': item.find('.//ns:ShippingServiceCost', ns).text if 
+            item.find('.//ns:ShippingServiceCost', ns) is not None else 0,
+            #     item.find('.//ns:ConvertedCurrentPrice', ns) is not None else item.find('.//ns:StartPrice', ns).text,
+                                                                    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            # AttributeError: 'NoneType' object has no attribute 'text'
+          'current_price': item.find('.//ns:ConvertedCurrentPrice', ns).text if 
+            item.find('.//ns:ConvertedCurrentPrice', ns) is not None else item.find('.//ns:StartPrice', ns).text,
+          'image_url': item.find('.//ns:GalleryURL', ns).text
+        }
+        items.append(item_info)
 
-    return jsonify({
-       'watchlist': items
-    })
+      return jsonify({
+        'watchlist': items
+      })
+    except Exception as e:
+      print('ウォッチリスト取得エラー', e)
 
 # def search_single_item():
 #   print('search-product 処理開始')
